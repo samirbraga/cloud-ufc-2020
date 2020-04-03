@@ -28,7 +28,7 @@ Likes.init({
     },
 }, {
     sequelize,
-    modelName: 'posts'
+    modelName: 'likes'
 });
 
 module.exports = Likes;
