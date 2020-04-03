@@ -82,7 +82,8 @@ module.exports = {
     add(req, res) {
         Posts.create({
             ...req.body,
-            user_id: req.params.userId
+            user_id: req.params.userId,
+            publication_date: new Date();
         })
         .then(post => {
             res.json({
@@ -150,5 +151,22 @@ module.exports = {
             }
         })
          .catch(handles.handleServerError(res));
+     },
+
+     search_range(req, res) {
+        Posts.findAndCountAll({
+            where: {
+                publication_date: {
+                    [Op.between]: [req.params.startDate, req.params.endDate]
+                }
+            }
+        })
+        .then(result => {
+                res.json({
+                    status: 'success',
+                    users: result.rows
+                });
+            })
+            .catch(handles.handleServerError(res));
      }
 };
