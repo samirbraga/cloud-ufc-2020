@@ -8,6 +8,7 @@ const config = require('../config');
 const dbUtils = require('../db/utils');
 const TokenBlacklist = require('../model/TokenBlacklist');
 const Users = require('../model/Users');
+const EmailService = require('./email');
 
 const _generateVerificationCode = () => {
     const rand = () => Math.floor(Math.random() * 10); 
