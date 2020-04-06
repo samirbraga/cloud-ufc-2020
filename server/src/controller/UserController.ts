@@ -1,19 +1,30 @@
 import { Request, Response } from 'express'
-import { OK, CREATED } from 'http-status-codes'
+import { OK, CREATED, UNAUTHORIZED } from 'http-status-codes'
 import { JwtManager, ISecureRequest } from '@overnightjs/jwt'
 import { Delete, Controller, Post, Put, Get, Middleware } from '@overnightjs/core'
 import UserService from '../service/UserService'
+import authMiddleware from './middlewares/authMiddleware'
 
 @Controller('api/user')
 class UserController {
-    private userService = new UserService()
+    private userService = UserService.getInstance()
 
-    public userPosts(req: Request, res: Response) {
-        
+    @Delete('signout')
+    @Middleware([JwtManager.middleware, authMiddleware])
+    public async userPosts(req: ISecureRequest, res: Response) {
+        const { userId } = req.params
+
+        const posts = await this.userService.getUserPosts(parseInt(userId))
+
+        if (posts) {
+            res.status(OK).json(posts)
+        } else {
+            throw new Error('Não foi possível remover o usuário.')
+        }
     }
     
     @Delete('signout')
-    @Middleware(JwtManager.middleware)
+    @Middleware([JwtManager.middleware, authMiddleware])
     public async logout(req: ISecureRequest, res: Response) {
         const { tokenId } = req.payload
         const removed = await this.userService.logout(tokenId)
@@ -28,7 +39,7 @@ class UserController {
     @Post('signup')
     public async create(req: ISecureRequest, res: Response) {
         const user = await this.userService.add(req.body)
-        const token = await this.userService.geneareToken(user.id)
+        const token = await this.userService.generateToken(user.id)
 
         if (user) {
             res.status(CREATED).json({
@@ -45,7 +56,7 @@ class UserController {
         const { username, password } = req.body
         const userId = await this.userService.login(username, password)        
         if (userId) {
-            const token = await this.userService.geneareToken(userId)
+            const token = await this.userService.generateToken(userId)
             res.status(CREATED).json({
                 userId,
                 token
@@ -61,23 +72,30 @@ class UserController {
     }
     
     @Put(':userId')
-    @Middleware(JwtManager.middleware)
+    @Middleware([JwtManager.middleware, authMiddleware])
     public async update(req: ISecureRequest, res: Response) {
         const { userId } = req.params
-        
+
         const updated = await this.userService.updateById(parseInt(userId), req.body)
 
         if (updated) {
             res.status(OK).end()
         } else {
-            throw new Error('Nenhum usuário foi atualizado.')
+            throw new Error('Não foi possível atualizar os dados do usuário.')
         }
     }
     
     @Delete(':userId')
-    @Middleware(JwtManager.middleware)
-    public destroy(req: ISecureRequest, res: Response) {
+    @Middleware([JwtManager.middleware, authMiddleware])
+    public async destroy(req: ISecureRequest, res: Response) {
         const { userId } = req.params
+        const removed = await this.userService.removeById(parseInt(userId), req.body)
+
+        if (removed) {
+            res.status(OK).end()
+        } else {
+            throw new Error('Não foi possível remover o usuário.')
+        }
     }
 }
 

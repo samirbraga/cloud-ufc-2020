@@ -10,7 +10,7 @@ type PostRequestParams = {
 
 @Controller('api/:userId/posts')
 class PostController {
-    private postService = new PostService()
+    private postService = PostService.getInstance()
 
     @Post()
     public async add(req: Request, res: Response) {

@@ -25,4 +25,5 @@ declare type UserEntity = {
 declare type TokenBlackListEntity = {
     id?: number
     token: string
+    userId: number
 }

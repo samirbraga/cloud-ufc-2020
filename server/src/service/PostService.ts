@@ -1,7 +1,12 @@
 import PostRepo from '../repository/Post';
+import Singleton from '../utils/Singleton';
 
-class PostService {
-    private postRepository: PostRepo = new PostRepo()
+class PostService extends Singleton {
+    private postRepository = new PostRepo()
+
+    public static getInstance<T = PostService>(): T {
+        return super.getInstance<T>()
+    }
 
     public async getById(id: number): Promise<PostEntity> {
         return this.postRepository.getById(id)

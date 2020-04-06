@@ -37,9 +37,7 @@ create table likes (
 create table token_blacklist (
   "id" int,
   token text not null,
-  type text not null,
-  attempts smallint,
-  code smallint,
+  userId smallint not null
   
   constraint pk_token_blacklist primary key ("id")
 )

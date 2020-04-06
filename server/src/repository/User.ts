@@ -1,7 +1,11 @@
 import IRepository from './Repository';
 import User from '../model/User';
+import Post from '../model/Post';
+import PostRepo from './Post';
 
 class UserRepo extends IRepository<User, UserEntity> {
+    private postRepo = new PostRepo()
+
     getById(id: number) {
         return User.findOne({
             where: {
@@ -58,6 +62,10 @@ class UserRepo extends IRepository<User, UserEntity> {
                 ...updates
             }
         })
+    }
+
+    getUserPosts(id: number) {
+        return this.postRepo.getAllWithLikes({})
     }
 }
 

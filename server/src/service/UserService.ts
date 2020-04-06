@@ -1,14 +1,31 @@
-import sequelize from 'sequelize';
 import { JwtManager } from '@overnightjs/jwt'
 import UserRepo from '../repository/User';
 import TokenBlackListRepo from '../repository/TokenBlackList';
+import Singleton from '../utils/Singleton';
 
-class UserService {
+class UserService extends Singleton {
     private userRepository = new UserRepo()
     private tokenRepository = new TokenBlackListRepo()
+
+    public static getInstance<T = UserService>(): T {
+        return super.getInstance<T>()
+    }
     
     public async getById(id: number): Promise<UserEntity> {
         return this.userRepository.getById(id)
+    }
+
+    public async checkToken(tokenId: number, userId: number): Promise<boolean> {
+        const token = await this.tokenRepository.getById(tokenId)
+        if (token && token.userId === userId) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    public async getUserPosts(userId: number): Promise<PostEntity[]> {
+        return this.userRepository.getUserPosts(userId)
     }
 
     public async generateToken(userId: number): Promise<TokenBlackListEntity> {
@@ -20,7 +37,8 @@ class UserService {
 
         return await this.tokenRepository.insert({
             id: tokenId,
-            token
+            token,
+            userId
         })
     }
 
