@@ -6,28 +6,38 @@ import Like from './Like';
 
 
 class Post extends Sequelize.Model implements PostEntity {
-    public id: number
-    public userId: number
-    public publicationDate: string
-    public s3Address: string
+    public id!: number
+    public userId!: number
+    public publicationDate!: string
+    public s3Address!: string
 }
 
 // Model definition
 Post.init({
-    id: { defaultValue: generateId, type: Sequelize.SMALLINT, primaryKey: true },
+    id: { defaultValue: generateId.smallint, type: Sequelize.SMALLINT, primaryKey: true },
     userId: {
         type: Sequelize.SMALLINT, 
         allowNull: false, 
+        field: 'user_id',
         references: {
             model: User,
             key: 'id'
         }
     },
-    publicationDate: { type: Sequelize.DATE, allowNull: false},
-    s3Address: { type: Sequelize.TEXT, allowNull: false }
+    publicationDate: {
+        type: Sequelize.DATE,
+        field: 'publication_date',
+        allowNull: false
+    },
+    s3Address: {
+        type: Sequelize.TEXT,
+        field: 's3_address',
+        allowNull: false
+    }
 }, {
     sequelize,
-    modelName: 'posts'
+    modelName: 'posts',
+    tableName: 'posts'
 });
 
 Post.belongsToMany(User, {

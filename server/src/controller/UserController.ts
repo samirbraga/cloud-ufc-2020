@@ -1,22 +1,23 @@
 import { Request, Response } from 'express'
-import { OK, CREATED, UNAUTHORIZED } from 'http-status-codes'
+import { OK, CREATED } from 'http-status-codes'
 import { JwtManager, ISecureRequest } from '@overnightjs/jwt'
 import { Delete, Controller, Post, Put, Get, Middleware } from '@overnightjs/core'
 import UserService from '../service/UserService'
 import authMiddleware from './middlewares/authMiddleware'
+import { Logger } from '@overnightjs/logger'
 
 @Controller('api/user')
 class UserController {
     private userService = UserService.getInstance()
 
-    @Delete('signout')
+    @Get('posts')
     @Middleware([JwtManager.middleware, authMiddleware])
     public async userPosts(req: ISecureRequest, res: Response) {
-        const { userId } = req.params
+        const { userId } = req.payload
 
         const posts = await this.userService.getUserPosts(parseInt(userId))
 
-        if (posts) {
+        if (Array.isArray(posts)) {
             res.status(OK).json(posts)
         } else {
             throw new Error('Não foi possível remover o usuário.')
@@ -89,7 +90,7 @@ class UserController {
     @Middleware([JwtManager.middleware, authMiddleware])
     public async destroy(req: ISecureRequest, res: Response) {
         const { userId } = req.params
-        const removed = await this.userService.removeById(parseInt(userId), req.body)
+        const removed = await this.userService.removeById(parseInt(userId))
 
         if (removed) {
             res.status(OK).end()

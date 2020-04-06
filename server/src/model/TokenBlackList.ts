@@ -4,19 +4,24 @@ import { generateId } from '../db/utils';
 
 
 class TokenBlacklist extends Sequelize.Model implements TokenBlackListEntity {
-    public id: number
-    public token: string
-    public userId: number
+    public id!: number
+    public token!: string
+    public userId!: number
 }
 
 // Model definition
 TokenBlacklist.init({
-    id: { defaultValue: generateId, type: Sequelize.INTEGER, primaryKey: true },
+    id: { defaultValue: generateId.smallint, type: Sequelize.SMALLINT, primaryKey: true },
     token: { type: Sequelize.TEXT, allowNull: false },
-    userId: { type: Sequelize.SMALLINT, allowNull: false }
+    userId: {
+        type: Sequelize.SMALLINT,
+        field: 'user_id',
+        allowNull: false
+    }
 }, {
     sequelize,
-    modelName: 'token_blacklist'
+    modelName: 'token_blacklist',
+    tableName: 'token_blacklist'
 });
 
 export default TokenBlacklist;

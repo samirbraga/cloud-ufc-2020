@@ -31,7 +31,10 @@ class UserRepo extends IRepository<User, UserEntity> {
     }
 
     insert(data: UserEntity) {
-        return User.create(data)
+        console.log(data)
+        return User.create({
+            ...data
+        })
     }
 
     updateById(id: number, updates: Partial<UserEntity>) {
@@ -65,7 +68,7 @@ class UserRepo extends IRepository<User, UserEntity> {
     }
 
     getUserPosts(id: number) {
-        return this.postRepo.getAllWithLikes({})
+        return this.postRepo.getByAuthor(id)
     }
 }
 

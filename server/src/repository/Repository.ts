@@ -2,12 +2,12 @@ import { generateId } from "../db/utils"
 
 abstract class IRepository<Model, IModel=Model> {
     public generateId() {
-        return generateId()
+        return generateId.smallint()
     }
 
     abstract getById(id: number): Promise<Model>
 
-    abstract getAll(filters: Partial<IModel>): Promise<Model[]>
+    abstract getAll(filters: any): Promise<Model[]>
 
     abstract insert(data: IModel): Promise<Model>
 

@@ -6,6 +6,7 @@ import { Logger } from '@overnightjs/logger'
 import { Request, Response } from 'express'
 import UserController from './controller/UserController'
 import PostController from './controller/PostController'
+import FeedController from './controller/FeedController';
 
 class AppServer extends Server {
     private readonly SERVER_STARTED = 'Server started on port: '
@@ -34,7 +35,8 @@ class AppServer extends Server {
     private setupControllers(): void {
         super.addControllers([
             new UserController(),
-            new PostController()
+            new PostController(),
+            new FeedController()
         ])
     }
 

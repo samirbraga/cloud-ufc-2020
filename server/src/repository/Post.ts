@@ -23,13 +23,13 @@ class PostRepo extends IRepository<Post, PostEntity> {
         })
     }
 
-    getAllWithLikes(filter: Partial<PostEntity>) {
+    getAllWithLikes(filter: any) {
         return Post.findAll({
             where: {
                 ...filter
             },
             include: [{
-                model: Like,
+                model: User,
                 through: {
                     attributes: []
                 }
@@ -86,6 +86,20 @@ class PostRepo extends IRepository<Post, PostEntity> {
         return Post.destroy({
             where: {
                 ...updates
+            }
+        })
+    }
+
+    getByAuthor(userId: number) {
+        return this.getAllWithLikes({
+            userId
+        })
+    }
+
+    getBetweenDates(startDate: Date, endDate: Date) {
+        return this.getAllWithLikes({
+            publicationDate: {
+                $between: [startDate, endDate]
             }
         })
     }

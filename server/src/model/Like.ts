@@ -12,18 +12,20 @@ class Like extends Sequelize.Model implements LikeEntity {
 
 // Model definition
 Like.init({
-    id: { defaultValue: generateId, type: Sequelize.INTEGER, primaryKey: true },
+    id: { defaultValue: generateId.smallint, type: Sequelize.SMALLINT, primaryKey: true },
     userId: {
-        type: Sequelize.INTEGER, 
-        allowNull: false, 
+        type: Sequelize.SMALLINT, 
+        allowNull: false,
+        field: 'user_id',
         references: {
             model: User,
             key: 'id'
         }
     },
     postId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.SMALLINT,
         allowNull: false,
+        field: 'post_id',
         references: {
             model: Post,
             key: 'id'
@@ -31,7 +33,8 @@ Like.init({
     }
 }, {
     sequelize,
-    modelName: 'likes'
+    modelName: 'likes',
+    tableName: 'likes'
 })
 
 export default Like

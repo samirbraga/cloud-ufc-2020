@@ -1,15 +1,20 @@
 import { JwtManager } from '@overnightjs/jwt'
 import UserRepo from '../repository/User';
 import TokenBlackListRepo from '../repository/TokenBlackList';
-import Singleton from '../utils/Singleton';
 
-class UserService extends Singleton {
+class UserService {
     private userRepository = new UserRepo()
     private tokenRepository = new TokenBlackListRepo()
+    private static instance: UserService    
 
-    public static getInstance<T = UserService>(): T {
-        return super.getInstance<T>()
+    public static getInstance() {
+        if (!UserService.instance) {
+            UserService.instance = new UserService()
+        }
+
+        return UserService.instance
     }
+
     
     public async getById(id: number): Promise<UserEntity> {
         return this.userRepository.getById(id)
