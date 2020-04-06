@@ -1,7 +1,7 @@
 import IRepository from './Repository';
-import Like, { ILike } from '../model/Like';
+import Like from '../model/Like';
 
-class LikeRepo implements IRepository<Like, ILike> {
+class LikeRepo extends IRepository<Like, LikeEntity> {
     getById(id: number) {
         return Like.findOne({
             where: {
@@ -10,7 +10,7 @@ class LikeRepo implements IRepository<Like, ILike> {
         })
     }
 
-    getAll(filter: Partial<ILike>) {
+    getAll(filter: Partial<LikeEntity>) {
         return Like.findAll({
             where: {
                 ...filter
@@ -18,11 +18,11 @@ class LikeRepo implements IRepository<Like, ILike> {
         })
     }
 
-    insert(data: ILike) {
+    insert(data: LikeEntity) {
         return Like.create(data)
     }
 
-    updateById(id: string, updates: Partial<ILike>) {
+    updateById(id: number, updates: Partial<LikeEntity>) {
         return Like.update(updates, {
             where: {
                 id
@@ -30,7 +30,7 @@ class LikeRepo implements IRepository<Like, ILike> {
         })
     }
 
-    destroyById(id: string) {
+    destroyById(id: number) {
         return Like.destroy({
             where: {
                 id
@@ -38,7 +38,7 @@ class LikeRepo implements IRepository<Like, ILike> {
         })
     }
 
-    destroy(updates: Partial<ILike>) {
+    destroy(updates: Partial<LikeEntity>) {
         return Like.destroy({
             where: {
                 ...updates

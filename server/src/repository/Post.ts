@@ -1,10 +1,10 @@
 import IRepository from './Repository';
-import Post, { IPost } from '../model/Post';
+import Post from '../model/Post';
 import LikeRepo from './Like';
 import User from '../model/User';
 import Like from '../model/Like';
 
-class PostRepo implements IRepository<Post, IPost> {
+class PostRepo extends IRepository<Post, PostEntity> {
     private likeRepo: LikeRepo = new LikeRepo()
 
     getById(id: number) {
@@ -15,7 +15,7 @@ class PostRepo implements IRepository<Post, IPost> {
         })
     }
 
-    getAll(filter: Partial<IPost>) {
+    getAll(filter: Partial<PostEntity>) {
         return Post.findAll({
             where: {
                 ...filter
@@ -23,7 +23,7 @@ class PostRepo implements IRepository<Post, IPost> {
         })
     }
 
-    getAllWithLikes(filter: Partial<IPost>) {
+    getAllWithLikes(filter: Partial<PostEntity>) {
         return Post.findAll({
             where: {
                 ...filter
@@ -38,24 +38,21 @@ class PostRepo implements IRepository<Post, IPost> {
     }
 
     getLikesById(id: number) {
-        return Post.findOne({
+        return Like.findAll({
             where: {
                 id
             },
             include: [{
-                model: Like,
-                through: {
-                    attributes: []
-                }
+                model: User
             }]
         })
     }
 
-    insert(data: IPost) {
+    insert(data: PostEntity) {
         return Post.create(data)
     }
 
-    updateById(id: string, updates: Partial<IPost>) {
+    updateById(id: number, updates: Partial<PostEntity>) {
         return Post.update(updates, {
             where: {
                 id
@@ -77,7 +74,7 @@ class PostRepo implements IRepository<Post, IPost> {
         })
     }
 
-    destroyById(id: string) {
+    destroyById(id: number) {
         return Post.destroy({
             where: {
                 id
@@ -85,7 +82,7 @@ class PostRepo implements IRepository<Post, IPost> {
         })
     }
 
-    destroy(updates: Partial<IPost>) {
+    destroy(updates: Partial<PostEntity>) {
         return Post.destroy({
             where: {
                 ...updates

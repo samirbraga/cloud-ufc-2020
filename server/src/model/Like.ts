@@ -4,13 +4,7 @@ import { generateId } from '../db/utils'
 import User from './User'
 import Post from './Post'
 
-export interface ILike {
-    id?: number
-    userId: number
-    postId: number
-}
-
-class Like extends Sequelize.Model implements ILike {
+class Like extends Sequelize.Model implements LikeEntity {
     public id: number
     public userId: number
     public postId: number

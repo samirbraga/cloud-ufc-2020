@@ -4,14 +4,8 @@ import { generateId } from '../db/utils';
 import User from './User';
 import Like from './Like';
 
-export interface IPost {
-    id?: number
-    userId: number
-    publicationDate: string
-    s3Address: string
-}
 
-class Post extends Sequelize.Model implements IPost {
+class Post extends Sequelize.Model implements PostEntity {
     public id: number
     public userId: number
     public publicationDate: string

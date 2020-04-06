@@ -1,7 +1,7 @@
 import IRepository from './Repository';
-import User, { IUser } from '../model/User';
+import User from '../model/User';
 
-class UserRepo implements IRepository<User, IUser> {
+class UserRepo extends IRepository<User, UserEntity> {
     getById(id: number) {
         return User.findOne({
             where: {
@@ -10,7 +10,7 @@ class UserRepo implements IRepository<User, IUser> {
         })
     }
 
-    getAll(filter: Partial<IUser>) {
+    getAll(filter: Partial<UserEntity>) {
         return User.findAll({
             where: {
                 ...filter
@@ -18,15 +18,21 @@ class UserRepo implements IRepository<User, IUser> {
         })
     }
 
-    insert(data: IUser) {
+    getByUserName(username: string) {
+        return User.findOne({
+            where: {
+                username
+            }
+        })
+    }
+
+    insert(data: UserEntity) {
         return User.create(data)
     }
 
-    updateById(id: string, updates: Partial<IUser>) {
+    updateById(id: number, updates: Partial<UserEntity>) {
         return User.update(updates, {
-            where: {
-                id
-            }
+            where: { id }
         })
     }
 
@@ -38,7 +44,7 @@ class UserRepo implements IRepository<User, IUser> {
         })
     }
 
-    destroyById(id: string) {
+    destroyById(id: number) {
         return User.destroy({
             where: {
                 id
@@ -46,7 +52,7 @@ class UserRepo implements IRepository<User, IUser> {
         })
     }
 
-    destroy(updates: Partial<IUser>) {
+    destroy(updates: Partial<UserEntity>) {
         return User.destroy({
             where: {
                 ...updates

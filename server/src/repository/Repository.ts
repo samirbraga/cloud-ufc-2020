@@ -1,15 +1,21 @@
-interface IRepository<Model, IModel=Model> {
-    getById(id: number): Promise<Model>
+import { generateId } from "../db/utils"
 
-    getAll(filters: Partial<IModel>): Promise<Model[]>
+abstract class IRepository<Model, IModel=Model> {
+    public generateId() {
+        return generateId()
+    }
 
-    insert(data: IModel): Promise<Model>
+    abstract getById(id: number): Promise<Model>
 
-    updateById(id: string, updated: Partial<IModel>): Promise<[number, Model[]]>
+    abstract getAll(filters: Partial<IModel>): Promise<Model[]>
 
-    destroyById(id: string): Promise<number>
+    abstract insert(data: IModel): Promise<Model>
 
-    destroy(filters: Partial<IModel>): Promise<number>
+    abstract updateById(id: number, updated: Partial<IModel>): Promise<[number, Model[]]>
+
+    abstract destroyById(id: number): Promise<number>
+
+    abstract destroy(filters: Partial<IModel>): Promise<number>
 }
 
 export default IRepository
