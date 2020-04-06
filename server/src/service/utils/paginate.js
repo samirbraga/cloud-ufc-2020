@@ -1,4 +1,4 @@
-const config = require('./../../config');
+const config = require('../../config');
 
 module.exports = (req, result) => {
     let page = parseInt(req.query.page) || 1;

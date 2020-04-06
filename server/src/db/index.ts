@@ -1,9 +1,10 @@
-const Sequelize = require('sequelize');
-const config = require('../config');
+import { Sequelize } from 'sequelize'
+import config from '../config'
+
 const sequelize = new Sequelize(config.DB_NAME, config.DB_USER, config.DB_PASS, {
     dialect: 'postgres',
     host: config.DB_HOST,
-    port: config.DB_PORT,
+    port: parseInt(config.DB_PORT),
     define: {
         timestamps: false,
         freezeTableName: true,
@@ -12,4 +13,4 @@ const sequelize = new Sequelize(config.DB_NAME, config.DB_USER, config.DB_PASS, 
     }
 });
 
-module.exports = sequelize;
+export default sequelize;

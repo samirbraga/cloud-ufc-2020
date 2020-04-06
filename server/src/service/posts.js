@@ -32,9 +32,9 @@ module.exports = {
 
             Likes.findAll({
                 where: {
-                    post_id: providedPostId
+                    postId: providedPostId
                 },
-                attributes: [[sequelize.fn('count', 'user_id'), 'count']],
+                attributes: [[sequelize.fn('count', 'userId'), 'count']],
                 include: [
                 ],
                 subQuery: false,
@@ -74,7 +74,7 @@ module.exports = {
             }
             res.json({
                 status: 'success',
-                news_id: postId.toString()
+                newsId: postId.toString()
             });
         })
         .catch(handles.handleServerError(res));
@@ -82,13 +82,13 @@ module.exports = {
     add(req, res) {
         Posts.create({
             ...req.body,
-            user_id: req.params.userId,
+            userId: req.params.userId,
             publication_date: new Date();
         })
         .then(post => {
             res.json({
                 status: 'success',
-                post_id: post.id.toString()
+                postId: post.id.toString()
             });
         })
         .catch(handles.handleServerError(res));
@@ -117,13 +117,13 @@ module.exports = {
 
     like(req, res) {
         Likes.create({
-            user_id: req.params.userId,
-            post_id: req.params.postId
+            userId: req.params.userId,
+            postId: req.params.postId
         })
         .then(like => {
             res.json({
                 status: 'success',
-                like_id: like.id.toString()
+                likeId: like.id.toString()
             });
         })
         .catch(handles.handleServerError(res));
@@ -133,8 +133,8 @@ module.exports = {
     unlike(req, res) {
          Likes.destroy({
             where: {
-                user_id: req.params.userId,
-                post_id: req.params.postId
+                userId: req.params.userId,
+                postId: req.params.postId
             }
         })
          .then(likeCount => {
@@ -162,11 +162,11 @@ module.exports = {
             }
         })
         .then(result => {
-                res.json({
-                    status: 'success',
-                    users: result.rows
-                });
-            })
-            .catch(handles.handleServerError(res));
+            res.json({
+                status: 'success',
+                users: result.rows
+            });
+        })
+        .catch(handles.handleServerError(res));
      }
 };

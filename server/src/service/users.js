@@ -7,7 +7,7 @@ const paginate = require('./utils/paginate');
 const config = require('../config');
 const dbUtils = require('../db/utils');
 const TokenBlacklist = require('../model/TokenBlacklist');
-const Users = require('../model/Users');
+const Users = require('../model/User');
 const EmailService = require('./email');
 
 const _generateVerificationCode = () => {
@@ -17,9 +17,9 @@ const _generateVerificationCode = () => {
 
 module.exports = {
     get(req, res) {
-        const providedUserId = req.params.user_id;
+        const providedUserId = req.params.userId;
         if (providedUserId) {
-            const tokenUserId = req.tokenData.user_id;
+            const tokenUserId = req.tokenData.userId;
 
             if (providedUserId === tokenUserId) {
                 Users.findOne({
@@ -79,8 +79,7 @@ module.exports = {
             attributes: {
                 exclude: ['password']
             },
-            include: [
-            ]
+            include: []
         })
         .then(user => {
             if (!user) {
@@ -105,8 +104,8 @@ module.exports = {
             .then(user => {
                 const code = _generateVerificationCode();
                 const tokenData = {
-                    id: dbUtils.generateId(),
-                    user_id: user.id.toString(),
+                    id: generateId(),
+                    userId: user.id.toString(),
                 };
 
                 jwt.sign(tokenData, config.JWT_SECRET, { expiresIn: '24h' }, (err, token) => {
@@ -174,9 +173,9 @@ module.exports = {
                 if (result === true) {
                     const code = _generateVerificationCode();
                     const tokenData = {
-                        id: dbUtils.generateId(),
+                        id: generateId(),
                         code,
-                        user_id: user.id.toString()
+                        userId: user.id.toString()
                     };
 
                     jwt.sign(tokenData, config.JWT_SECRET, { expiresIn: '24h' }, (err, token) => {
@@ -231,8 +230,8 @@ module.exports = {
             }
 
             const tokenData = {
-                id: dbUtils.generateId(),
-                user_id: user.id.toString(),
+                id: generateId(),
+                userId: user.id.toString(),
             };
 
             jwt.sign(tokenData, config.JWT_SECRET, { expiresIn: '24h' }, (err, token) => {
@@ -269,7 +268,7 @@ module.exports = {
     updatePassword(req, res) {
         Users.findOne({
             where: {
-                id: req.tokenData.user_id
+                id: req.tokenData.userId
             }
         })
         .then(user => {
@@ -289,7 +288,7 @@ module.exports = {
                 .then(() => {
                     res.json({
                         status: 'success',
-                        user_id: req.tokenData.user_id
+                        userId: req.tokenData.userId
                     });
                 })
                 .catch(handles.handleServerError(res));
@@ -317,8 +316,8 @@ module.exports = {
                 
                 if (result === true) {
                     const tokenData = {
-                        id: dbUtils.generateId(),
-                        user_id: user.id.toString()
+                        id: generateId(),
+                        userId: user.id.toString()
                     };
 
                     jwt.sign(tokenData, config.JWT_SECRET, { expiresIn: '30d' }, (err, token) => {
@@ -333,7 +332,7 @@ module.exports = {
                         .then(() => {
                             res.json({
                                 status: 'success',
-                                user_id: user.id,
+                                userId: user.id,
                                 access_token: token
                             });
                         })
@@ -364,9 +363,9 @@ module.exports = {
         .catch(handles.handleServerError(res));
     },
     update(req, res) {
-        const userId = req.params.user_id;
+        const userId = req.params.userId;
 
-        if (userId === req.tokenData.user_id) {
+        if (userId === req.tokenData.userId) {
             Users.update({
                 ...req.body
             }, {
@@ -384,7 +383,7 @@ module.exports = {
     
                 res.json({
                     status: 'success',
-                    user_id: userId
+                    userId: userId
                 });
             })
             .catch(handles.handleServerError(res));
@@ -396,7 +395,7 @@ module.exports = {
         }
     },
     destroy(req, res) {
-        const userId = req.params.user_id;
+        const userId = req.params.userId;
         Users.destroy({
             where: {
                 id: userId
@@ -412,7 +411,7 @@ module.exports = {
 
             res.json({
                 status: 'success',
-                user_id: userId
+                userId: userId
             });
         })
         .catch(handles.handleServerError(res));
