@@ -63,23 +63,35 @@ class PostRepo extends IRepository<Post, PostEntity> {
     }
 
     likeById(postId: number, userId: number) {
-        return Promise.all([
-            this.likeRepo.insert({
-                postId,
-                userId
-            }),
-            this.likeCountRepo.increment(postId)
-        ])
+        return new Promise((resolve, reject) => {
+            Promise.all([
+                this.likeRepo.insert({
+                    postId,
+                    userId
+                }),
+                this.likeCountRepo.increment(postId)
+            ])
+            .then(([like]) => {
+                resolve(like)
+            })
+            .catch(reject)
+        }) as Promise<LikeEntity>
     }
 
     unlikeById(postId: number, userId: number) {
-        return Promise.all([
-            this.likeRepo.destroy({
-                postId,
-                userId
-            }),
-            this.likeCountRepo.dencrement(postId)
-        ])
+        return new Promise((resolve, reject) => {
+            Promise.all([
+                this.likeRepo.destroy({
+                    postId,
+                    userId
+                }),
+                this.likeCountRepo.dencrement(postId)
+            ])
+            .then(([removed]) => {
+                resolve(removed)
+            })
+            .catch(reject)
+        }) as Promise<number>
     }
 
     destroyById(id: number) {
