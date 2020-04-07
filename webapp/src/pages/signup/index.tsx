@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import Header from '@/components/Header';
 import styles from './styles.less';
 
@@ -6,7 +6,7 @@ import { NavLink } from 'umi';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Card, Typography, Grid, CardContent, Button, IconButton, TextField, InputLabel, Input, Container, TextFieldProps } from '@material-ui/core'
+import { Card, Typography, Grid, CardContent, Button, IconButton, TextField, InputLabel, Input, Container } from '@material-ui/core'
 
 import DateFnsUtils from '@date-io/date-fns';
 
@@ -18,8 +18,20 @@ import {
 
 import BASE_URL from '../../endpoint'
 
-const Signup: FunctionComponent = () => {
+interface SignupProps {
+  fromNotifications: boolean
+};
+
+const Signup: FunctionComponent<SignupProps> = ({ fromNotifications }) => {
+  useEffect(() => {
+    if (fromNotifications) {
   
+      console.log(fromNotifications)
+    } else {
+      console.log(fromNotifications)
+    }
+  })
+
   const [selectedFirstName, setSelectedFirstName] = React.useState("");
   const [selectedLastName, setSelectedLastName] = React.useState("");
   const [selectedEmail, setSelectedEmail] = React.useState("");
@@ -50,8 +62,11 @@ const Signup: FunctionComponent = () => {
   };
 
   const handleDateChange: (date: MaterialUiPickersDate) => void = (date: MaterialUiPickersDate) => {
-    if ( date )
-    setSelectedBirthdate(new Date(date.toISOString()));
+    if (date) {
+      if ( date.toString() !== "Invalid Date")
+        setSelectedBirthdate(new Date(date.toISOString()));
+      else setSelectedBirthdate(date);
+    }
   };
 
   const handlePhotoChange =  (event) => {
@@ -59,7 +74,7 @@ const Signup: FunctionComponent = () => {
   }
 
   function calculateAge(birthday: Date) { 
-    var ageDifMs = Date.now() -birthday.getTime();
+    var ageDifMs = Date.now() - birthday.getTime();
     var ageDate = new Date(ageDifMs);
     return Math.abs(ageDate.getUTCFullYear() - 1970).toString();
   }
@@ -78,10 +93,6 @@ const Signup: FunctionComponent = () => {
 
     const response = await fetch(`${BASE_URL}/user/signup`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
-      },
       body: form
       
     })

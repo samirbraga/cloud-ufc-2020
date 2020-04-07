@@ -9,3 +9,15 @@ declare type User = {
     email: string,
     birthdate: Date
 }
+
+declare type TextFieldProps = {
+    target: {
+        value: string
+    }
+}
+
+declare type PhotoInputElement = {
+    target: {
+        files: Array<BinaryType>
+    }
+}
