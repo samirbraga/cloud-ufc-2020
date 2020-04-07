@@ -1,13 +1,15 @@
+import expressAsyncHandler from 'express-async-handler';
 import { Request, Response } from 'express'
-import { Controller, Middleware, Get, Post, Put, Delete } from '@overnightjs/core'
+import { Controller, Middleware, Get, Post, Put, Delete, ClassMiddleware, ClassWrapper } from '@overnightjs/core'
 import { OK } from 'http-status-codes'
 import PostService from '../service/PostService'
 
 @Controller('api/feed')
+@ClassWrapper(expressAsyncHandler)
 class FeedController {
     private postService = PostService.getInstance()
 
-    @Get('')
+    @Get()
     public async get(req: Request, res: Response) {
         let posts: PostEntity[]
         const {
@@ -25,11 +27,6 @@ class FeedController {
         } else {
             throw new Error('Não foi possível remover o usuário.')
         }
-    }
-    
-    @Get('?startDate=<date>&endDate=<date>')
-    public getFeedDate(req: Request, res: Response) {
-    
     }
 }
 

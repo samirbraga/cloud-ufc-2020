@@ -3,9 +3,11 @@ import Post from '../model/Post';
 import LikeRepo from './Like';
 import User from '../model/User';
 import Like from '../model/Like';
+import LikeCountRepo from './LikeCount';
 
 class PostRepo extends IRepository<Post, PostEntity> {
     private likeRepo: LikeRepo = new LikeRepo()
+    private likeCountRepo = new LikeCountRepo()
 
     getById(id: number) {
         return Post.findOne({
@@ -61,17 +63,23 @@ class PostRepo extends IRepository<Post, PostEntity> {
     }
 
     likeById(postId: number, userId: number) {
-        return this.likeRepo.insert({
-            postId,
-            userId
-        })
+        return Promise.all([
+            this.likeRepo.insert({
+                postId,
+                userId
+            }),
+            this.likeCountRepo.increment(postId)
+        ])
     }
 
     unlikeById(postId: number, userId: number) {
-        return this.likeRepo.destroy({
-            postId,
-            userId
-        })
+        return Promise.all([
+            this.likeRepo.destroy({
+                postId,
+                userId
+            }),
+            this.likeCountRepo.dencrement(postId)
+        ])
     }
 
     destroyById(id: number) {

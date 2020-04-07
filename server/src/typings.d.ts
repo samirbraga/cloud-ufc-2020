@@ -27,3 +27,8 @@ declare type TokenBlackListEntity = {
     token: string
     userId: number
 }
+
+declare type LikeCountEntity = {
+    postId: number,
+    likesCount: number
+}

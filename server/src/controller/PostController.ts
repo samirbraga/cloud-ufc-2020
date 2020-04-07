@@ -1,7 +1,8 @@
+import expressAsyncHandler from "express-async-handler"
 import { Request, Response } from "express"
 import { JwtManager, ISecureRequest } from '@overnightjs/jwt'
 import { OK, CREATED, NOT_FOUND } from 'http-status-codes'
-import { Controller, Middleware, Get, Post, Put, Delete } from '@overnightjs/core'
+import { Controller, Middleware, Get, Post, Put, Delete, ClassWrapper } from '@overnightjs/core'
 import PostService from "../service/PostService"
 import authMiddleware from "./middlewares/authMiddleware"
 import postAuthorityMiddleware from "./middlewares/postAuthorityMiddleware"
@@ -12,6 +13,7 @@ type PostRequestParams = {
 }
 
 @Controller('api')
+@ClassWrapper(expressAsyncHandler)
 class PostController {
     private postService = PostService.getInstance()
 

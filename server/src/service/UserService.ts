@@ -1,6 +1,14 @@
 import { JwtManager } from '@overnightjs/jwt'
+import aws from 'aws-sdk'
+import url from 'url'
 import UserRepo from '../repository/User';
 import TokenBlackListRepo from '../repository/TokenBlackList';
+
+export const s3 = new aws.S3({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    sessionToken: process.env.AWS_SESSION_TOKEN
+})
 
 class UserService {
     private userRepository = new UserRepo()
@@ -60,15 +68,35 @@ class UserService {
         }
     }
 
-    public async updateById(id: number, newUser: UserEntity): Promise<boolean> {
-        const [updated] = await this.userRepository.updateById(id, newUser)
+    private deleteImage(imageUrl: string) {
+        return new Promise((resolve, reject) => {         
+            s3.deleteObject({
+                Bucket: process.env.AWS_S3_BUCKET,
+                Key: url.parse(imageUrl).path
+            }).send(err => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve()
+                }
+            })
+        })
+    }
 
+    public async updateById(id: number, newUser: UserEntity): Promise<boolean> {
+        const oldUser = await this.userRepository.getById(id)
+        if (newUser.profilePhoto) {  
+            await this.deleteImage(oldUser.profilePhoto) 
+        }
+
+        const [updated] = await this.userRepository.updateById(id, newUser)
         return updated > 0
     }
 
     public async removeById(id: number): Promise<boolean> {
+        const oldUser = await this.userRepository.getById(id)
+        await this.deleteImage(oldUser.profilePhoto)
         const removed = await this.userRepository.destroyById(id)
-
         return removed > 0
     }
 
@@ -76,6 +104,11 @@ class UserService {
         const removed = await this.tokenRepository.destroyById(tokenId)
 
         return removed > 0
+    }
+
+    public async getAll(): Promise<UserEntity[]> {
+        const users = await this.userRepository.getAll({})
+        return users
     }
 }
 

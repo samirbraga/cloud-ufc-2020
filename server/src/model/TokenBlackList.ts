@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
-import sequelize from '../db';
-import { generateId } from '../db/utils';
+import sequelize from '../postgres-db';
+import { generateId } from '../postgres-db/utils';
 
 
 class TokenBlacklist extends Sequelize.Model implements TokenBlackListEntity {
