@@ -37,7 +37,7 @@ const Header: FunctionComponent<HeaderProps> = ({ title }) => {
                             </NavLink>
                         </Grid>
                         <Grid item>
-                            <NavLink to="/create" className={styles.link}>
+                            <NavLink to={{pathname: "/create"}} className={styles.link}>
                                 <IconButton color="inherit" aria-label="criar postagem"><AddCircleIcon/></IconButton>
                             </NavLink>
                         </Grid>

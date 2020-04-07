@@ -1,10 +1,9 @@
 import React, { FunctionComponent } from 'react';
 import styles from './styles.less';
+import { history } from 'umi';
+import { Link } from 'umi';
 
-import { NavLink } from 'umi';
-
-import { makeStyles } from '@material-ui/core/styles';
-import { Card, Typography, Grid, CardContent, Button, TextField, InputLabel, Input, Container } from '@material-ui/core';
+import { Card, Typography, Grid, CardContent, Button, TextField, InputLabel, Container } from '@material-ui/core';
 
 import BASE_URL from '../../endpoint';
 
@@ -21,7 +20,7 @@ const Signin: FunctionComponent = () => {
   };
 
   const handleSubmit = async () => {
-    const response = await fetch(`${BASE_URL}/user/sigin`, {
+    const response = await fetch(`${BASE_URL}/user/signin`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -29,11 +28,31 @@ const Signin: FunctionComponent = () => {
       },
       body: JSON.stringify ({
         username: selectedUser,
-        dapassword: selectedPassword
+        password: selectedPassword
       })
     })
 
+    const res = await response.json();
+
     if (await response != undefined) {
+      console.log(res)
+      if (res.token != undefined) {
+        localStorage.setItem("token", res.token.token)
+        localStorage.setItem("userId", res.token.userId)
+        
+        history.push({
+          pathname: '/home',
+          state: {
+            token: res.token
+          }
+          
+        });
+      }
+      else {
+        console.log("erro ao logar")
+        console.log(res)
+
+      }
       // FAZ ALGO
 
     }
@@ -75,7 +94,7 @@ const Signin: FunctionComponent = () => {
                     />
                   </Grid>
                   <Grid item>
-                    <Button variant="contained" color="primary" size="small"><NavLink to="/home">Entrar</NavLink></Button>
+                    <Button variant="contained" color="primary" size="small" onClick={handleSubmit}>Entrar</Button>
                   </Grid>
                 </Grid>
               </form>
@@ -95,7 +114,7 @@ const Signin: FunctionComponent = () => {
                   spacing={2}
                 >
                   <InputLabel>Não tem uma conta?</InputLabel>
-                  <Button size="small" color="primary" ><NavLink to={{pathname: "/signup", state: { fromNotifications: true }}} >Cadastre-se</NavLink></Button>
+                  <Button size="small" color="primary" ><Link to={{pathname: "/signup"}} >Cadastre-se</Link></Button>
                 </Grid>
               </form>
             </CardContent>

@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
     root: {
       maxWidth: 500,
+      minWidth: 500,
     },
     media: {
       height: 0,
@@ -19,27 +20,33 @@ const useStyles = makeStyles((theme) => ({
 
   }));
 
-const Post: FunctionComponent = () => {
-    const trigger = useScrollTrigger({ target: window });
+interface PostProps {
+    photo: string,
+    description: string,
+    name: string,
+    profile: string
+};
+
+const Post: FunctionComponent<PostProps> = ( { photo, description, name, profile } ) => {
+  const trigger = useScrollTrigger({ target: window });
   const classes = useStyles();
 
     return (
         <Card className={classes.root}>
         <CardHeader
           avatar={
-            <Avatar aria-label="recipe" >R</Avatar>
+            <Avatar aria-label="profile ophoto" src={profile} />
           }
-          title="Shrimp and Chorizo Paella"
+          title={name}
         />
         <CardMedia
           className={classes.media}
-          image="https://www.receiteria.com.br/wp-content/uploads/receitas-de-comida-mexicana-1-1.jpg"
-          title="Paella dish"
+          image={photo}
+          title="post"
         />
         <CardContent>
           <Typography variant="body2" color="textSecondary" component="p">
-            This impressive paella is a perfect party dish and a fun meal to cook together with your
-            guests. Add 1 cup of frozen peas along with the mussels, if you like.
+            {description}
           </Typography>
         </CardContent>
         <CardActions disableSpacing>

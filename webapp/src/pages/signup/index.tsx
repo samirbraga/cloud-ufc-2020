@@ -2,11 +2,13 @@ import React, { FunctionComponent, useEffect } from 'react';
 import Header from '@/components/Header';
 import styles from './styles.less';
 
+import { green } from '@material-ui/core/colors';
+
 import { NavLink } from 'umi';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Card, Typography, Grid, CardContent, Button, IconButton, TextField, InputLabel, Input, Container } from '@material-ui/core'
+import { Card, Typography, Grid, CardContent, CircularProgress, Button, IconButton, TextField, InputLabel, Input, Container } from '@material-ui/core'
 
 import DateFnsUtils from '@date-io/date-fns';
 
@@ -17,6 +19,17 @@ import {
 } from '@material-ui/pickers';
 
 import BASE_URL from '../../endpoint'
+
+const useStyles = makeStyles((theme) => ({
+  buttonProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: '72.7%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
+  },
+}));
 
 interface SignupProps {
   fromNotifications: boolean
@@ -31,6 +44,11 @@ const Signup: FunctionComponent<SignupProps> = ({ fromNotifications }) => {
       console.log(fromNotifications)
     }
   })
+
+  const classes = useStyles();
+
+  const [loading, setLoading] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
 
   const [selectedFirstName, setSelectedFirstName] = React.useState("");
   const [selectedLastName, setSelectedLastName] = React.useState("");
@@ -73,34 +91,47 @@ const Signup: FunctionComponent<SignupProps> = ({ fromNotifications }) => {
     setSelectedPhoto(event.target.files[0])
   }
 
-  function calculateAge(birthday: Date) { 
-    var ageDifMs = Date.now() - birthday.getTime();
-    var ageDate = new Date(ageDifMs);
-    return Math.abs(ageDate.getUTCFullYear() - 1970).toString();
-  }
-
   const handleSubmit = async () => {
-    const form = new FormData()
-    form.append('username', selectedUser)
-    form.append('password', selectedPassword)
-    form.append('email', selectedEmail)
-    form.append('age',  calculateAge(selectedBirthdate))
-    form.append('birthdate', selectedBirthdate.toISOString())
-    form.append('firstName', selectedFirstName)
-    form.append('lastname', selectedLastName)
-    form.append('profilePhoto', selectedPhoto)
+    if (!loading) {
+      try {
+        setSuccess(false);
+        setLoading(true);
+  
+        const form = new FormData()
+        form.append('username', selectedUser)
+        form.append('password', selectedPassword)
+        form.append('email', selectedEmail)
+        form.append('birthdate', selectedBirthdate.toISOString())
+        form.append('firstName', selectedFirstName)
+        form.append('lastName', selectedLastName)
+        form.append('profilePhoto', selectedPhoto)
+    
+    
+        const response = await fetch(`${BASE_URL}/user/signup`, {
+          method: 'POST',
+          body: form
+          
+        })
+    
+        const user = await response.json();
+    
+        if (await response != undefined) {
+          setSuccess(true);
+          setLoading(false);
+          console.log(user)
+          console.log("Veio aqui mas nao parou")
+  
+        } else {
+          setSuccess(true);
+          setLoading(false);
+          console.log("Veio aqui mas nao parou")
+        }
 
+      } finally {
+        setSuccess(true);
+        setLoading(false);
+      }
 
-    const response = await fetch(`${BASE_URL}/user/signup`, {
-      method: 'POST',
-      body: form
-      
-    })
-
-    const user = await response.json();
-
-    if (await response != undefined) {
-      console.log(user)
     }
   };
 
@@ -131,16 +162,16 @@ const Signup: FunctionComponent<SignupProps> = ({ fromNotifications }) => {
                   spacing={2}
                 >
                   <Grid item>
-                    <TextField id="standard-basic" label="E-mail"onChange={handleEmailChange} />
+                    <TextField id="standard-basic1" label="E-mail"onChange={handleEmailChange} type="email"/>
                   </Grid>
                   <Grid item>
-                    <TextField id="standard-basic" label="Nome" onChange={handleFirstNameChange}/>
+                    <TextField id="standard-basic2" label="Nome" onChange={handleFirstNameChange} type="firstname"/>
                   </Grid>
                   <Grid item>
-                    <TextField fullWidth id="standard-basic" label="Sobrenome" onChange={handleLastNameChange}/>
+                    <TextField fullWidth id="standard-basic3" label="Sobrenome" onChange={handleLastNameChange} type="lastname"/>
                   </Grid>
                   <Grid item>
-                    <TextField id="standard-basic" label="Nome de usuário" onChange={handleUserChange}/>
+                    <TextField id="standard-basic4 " label="Nome de usuário" onChange={handleUserChange} type="username"/>
                   </Grid>
                   <Grid item>
                     <TextField
@@ -177,7 +208,16 @@ const Signup: FunctionComponent<SignupProps> = ({ fromNotifications }) => {
                     </label>
                   </Grid>
                   <Grid item>
-                    <Button variant="contained" color="primary" size="small" onClick={handleSubmit}>Cadastre-se</Button>
+                    <div>
+                      <Button 
+                        variant="contained" 
+                        color="primary" 
+                        size="small" 
+                        onClick={handleSubmit}
+                        disabled={loading}
+                      >Cadastre-se</Button>
+                      {loading && <CircularProgress size={24} className={classes.buttonProgress} />}  
+                    </div>
                   </Grid>
                 </Grid>
               </form>

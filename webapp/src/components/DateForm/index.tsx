@@ -48,7 +48,7 @@ const Post: FunctionComponent = () => {
                 variant="inline"
                 format="MM/dd/yyyy"
                 margin="normal"
-                id="date-picker-inline"
+                id="date-picker-inlin1e"
                 label="Data inicial"
                 value={selectedDate}
                 onChange={handleDateChange}

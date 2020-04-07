@@ -19,17 +19,23 @@ const useStyles = makeStyles((theme) => ({
 
   }));
 
-const Post: FunctionComponent = () => {
-    const trigger = useScrollTrigger({ target: window });
+interface PostProps {
+  username: string
+  photo: string
+};
+
+
+const Post: FunctionComponent<PostProps> = ({username, photo}) => {
+  const trigger = useScrollTrigger({ target: window });
   const classes = useStyles();
 
     return (
       <Card className={classes.root}>
         <CardHeader
           avatar={
-            <Avatar aria-label="recipe" >R</Avatar>
+            <Avatar aria-label="profile" src={photo}/>
           }
-          title="Shrimp and Chorizo Paella"
+          title={username}
         />
       </Card>
     );

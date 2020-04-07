@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FunctionComponent} from 'react';
 import Header from '@/components/Header';
 import styles from './styles.less';
 
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function OutlinedCard() {
+const Settings: FunctionComponent = () => {
   const classes = useStyles();
 
   return (
@@ -102,3 +102,5 @@ export default function OutlinedCard() {
     </Container>
   );
 }
+
+export default Settings ;
