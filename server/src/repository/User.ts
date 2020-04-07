@@ -2,6 +2,7 @@ import IRepository from './Repository';
 import User from '../model/User';
 import Post from '../model/Post';
 import PostRepo from './Post';
+import sequelize from 'sequelize';
 
 class UserRepo extends IRepository<User, UserEntity> {
     private postRepo = new PostRepo()
@@ -46,7 +47,9 @@ class UserRepo extends IRepository<User, UserEntity> {
     searchByUsername(username: string) {
         return User.findAll({
             where: {
-                username
+                username: {
+                    [sequelize.Op.iLike]: `%${username}%`
+                }
             }
         })
     }

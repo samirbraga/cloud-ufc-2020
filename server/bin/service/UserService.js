@@ -8,11 +8,30 @@ const aws_sdk_1 = __importDefault(require("aws-sdk"));
 const url_1 = __importDefault(require("url"));
 const User_1 = __importDefault(require("../repository/User"));
 const TokenBlackList_1 = __importDefault(require("../repository/TokenBlackList"));
-exports.s3 = new aws_sdk_1.default.S3({
+const credentials = new aws_sdk_1.default.Credentials({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: process.env.AWS_SESSION_TOKEN
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 });
+exports.s3 = new aws_sdk_1.default.S3({
+    accessKeyId: credentials.accessKeyId,
+    secretAccessKey: credentials.secretAccessKey
+});
+credentials.refresh(err => {
+    exports.s3 = new aws_sdk_1.default.S3({
+        accessKeyId: credentials.accessKeyId,
+        secretAccessKey: credentials.secretAccessKey,
+        sessionToken: credentials.sessionToken
+    });
+});
+setInterval(() => {
+    credentials.refresh(err => {
+        exports.s3 = new aws_sdk_1.default.S3({
+            accessKeyId: credentials.accessKeyId,
+            secretAccessKey: credentials.secretAccessKey,
+            sessionToken: credentials.sessionToken
+        });
+    });
+}, 1 * 60 * 60 * 1000);
 class UserService {
     constructor() {
         this.userRepository = new User_1.default();
@@ -64,8 +83,10 @@ class UserService {
         }
     }
     deleteImage(imageUrl) {
+        while (!this.s3)
+            continue;
         return new Promise((resolve, reject) => {
-            exports.s3.deleteObject({
+            this.s3.deleteObject({
                 Bucket: process.env.AWS_S3_BUCKET,
                 Key: url_1.default.parse(imageUrl).path
             }).send(err => {

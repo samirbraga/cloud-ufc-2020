@@ -2,36 +2,29 @@ import expressAsyncHandler from 'express-async-handler'
 import { Request, Response } from 'express'
 import { OK, CREATED } from 'http-status-codes'
 import { JwtManager, ISecureRequest } from '@overnightjs/jwt'
+import UserService from '../service/UserService'
 import { Delete, Controller, Post, Put, Get, Middleware, ClassWrapper } from '@overnightjs/core'
-import multer from 'multer'
-import multerS3 from 'multer-s3'
-import UserService, { s3 } from '../service/UserService'
 import authMiddleware from './middlewares/authMiddleware'
+import { upload, S3MulterFile } from './multerS3'
 
-type S3MulterFile = {
-    file: {
-        location: string
-    }
-}
-
-const upload = multer({
-    storage: multerS3({
-        s3: s3,
-        bucket: process.env.AWS_S3_BUCKET,
-        metadata: function (req, file, cb) {
-            cb(null, { fieldName: file.fieldname });
-        },
-        key: function (req, file, cb) {
-            cb(null, Date.now().toString())
-        },
-        acl: 'public-read'
-    })
-})
 
 @Controller('api/user')
 @ClassWrapper(expressAsyncHandler)
 class UserController {
     private userService = UserService.getInstance()
+
+
+    @Get('search')
+    public async searchByUsername(req: Request, res: Response) {
+        const { q } = req.query
+        const users = await this.userService.searchByUsername(q)
+
+        if (Array.isArray(users)) {
+            res.status(OK).json(users)
+        } else {
+            throw new Error('Não foi possível retornar os usuários.')
+        }
+    }
 
     @Get()
     public async getAll(req: ISecureRequest, res: Response) {
@@ -44,13 +37,9 @@ class UserController {
         }
     }
 
-    @Get('posts')
-    @Middleware([
-        JwtManager.middleware,
-        authMiddleware
-    ])
+    @Get(':userId/posts')
     public async userPosts(req: ISecureRequest, res: Response) {
-        const { userId } = req.payload
+        const { userId } = req.params
 
         const posts = await this.userService.getUserPosts(parseInt(userId))
 
@@ -81,6 +70,13 @@ class UserController {
     @Middleware(upload.single('profilePhoto'))
     public async create(req: Request & S3MulterFile, res: Response) {
         const { body } = req
+
+        if (req.file && req.file.location) {
+            body.profilePhoto = req.file.location
+        } else {
+            delete body.profilePhoto
+        }
+
         const user = await this.userService.add(body)
         const token = await this.userService.generateToken(user.id)
 

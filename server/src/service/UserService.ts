@@ -4,16 +4,36 @@ import url from 'url'
 import UserRepo from '../repository/User';
 import TokenBlackListRepo from '../repository/TokenBlackList';
 
-export const s3 = new aws.S3({
+aws.config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     sessionToken: process.env.AWS_SESSION_TOKEN
 })
 
+export const s3 = new aws.S3()
+
+// credentials.refresh(err => {
+//     s3 = new aws.S3({
+//         accessKeyId: credentials.accessKeyId,
+//         secretAccessKey: credentials.secretAccessKey,
+//         sessionToken: credentials.sessionToken
+//     })
+// })
+    
+// setInterval(() => {
+//     credentials.refresh(err => {
+//         s3 = new aws.S3({
+//             accessKeyId: credentials.accessKeyId,
+//             secretAccessKey: credentials.secretAccessKey,
+//             sessionToken: credentials.sessionToken
+//         })
+//     })
+// }, 1 * 60 * 60 * 1000)
+
 class UserService {
     private userRepository = new UserRepo()
     private tokenRepository = new TokenBlackListRepo()
-    private static instance: UserService    
+    private static instance: UserService
 
     public static getInstance() {
         if (!UserService.instance) {
@@ -22,7 +42,6 @@ class UserService {
 
         return UserService.instance
     }
-
     
     public async getById(id: number): Promise<UserEntity> {
         return this.userRepository.getById(id)
@@ -69,7 +88,7 @@ class UserService {
     }
 
     private deleteImage(imageUrl: string) {
-        return new Promise((resolve, reject) => {         
+        return new Promise((resolve, reject) => {
             s3.deleteObject({
                 Bucket: process.env.AWS_S3_BUCKET,
                 Key: url.parse(imageUrl).path
@@ -108,6 +127,11 @@ class UserService {
 
     public async getAll(): Promise<UserEntity[]> {
         const users = await this.userRepository.getAll({})
+        return users
+    }
+
+    public async searchByUsername(username: string): Promise<UserEntity[]> {
+        const users = await this.userRepository.searchByUsername(username)
         return users
     }
 }

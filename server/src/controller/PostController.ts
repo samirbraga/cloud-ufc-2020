@@ -6,6 +6,7 @@ import { Controller, Middleware, Get, Post, Put, Delete, ClassWrapper } from '@o
 import PostService from "../service/PostService"
 import authMiddleware from "./middlewares/authMiddleware"
 import postAuthorityMiddleware from "./middlewares/postAuthorityMiddleware"
+import { upload, S3MulterFile } from './multerS3'
 
 type PostRequestParams = {
     postId: string,
@@ -18,10 +19,24 @@ class PostController {
     private postService = PostService.getInstance()
 
     @Post(':userId/posts')
-    @Middleware([JwtManager.middleware, authMiddleware])
-    public async add(req: ISecureRequest, res: Response) {
+    @Middleware([
+        JwtManager.middleware,
+        authMiddleware,
+        upload.single('s3Address')
+    ])
+    public async add(req: ISecureRequest & S3MulterFile, res: Response) {
         const { userId } = req.payload
-        const post = await this.postService.add(req.body, userId)
+        
+        const { body } = req
+
+        console.log(body)
+        if (req.file && req.file.location) {
+            body.s3Address = req.file.location
+        } else {
+            delete body.s3Address
+        }
+
+        const post = await this.postService.add(body, userId)
 
         if (post) {
             res.status(CREATED).json(post)
@@ -31,11 +46,24 @@ class PostController {
     }
     
     @Put(':userId/posts/:postId')
-    @Middleware([JwtManager.middleware, authMiddleware, postAuthorityMiddleware])
-    public async update(req: Request<PostRequestParams>, res: Response) {
+    @Middleware([
+        JwtManager.middleware,
+        authMiddleware,
+        postAuthorityMiddleware,
+        upload.single('s3Address')
+    ])
+    public async update(req: Request<PostRequestParams> & S3MulterFile, res: Response) {
         const { postId } = req.params
+        
+        const { body } = req
 
-        const updated = await this.postService.updateById(parseInt(postId), req.body)
+        if (req.file && req.file.location) {
+            body.s3Address = req.file.location
+        } else {
+            delete body.s3Address
+        }
+
+        const updated = await this.postService.updateById(parseInt(postId), body)
 
         if (updated) {
             res.status(OK).end()
@@ -45,7 +73,11 @@ class PostController {
     }
     
     @Delete(':userId/posts/:postId')
-    @Middleware([JwtManager.middleware, authMiddleware, postAuthorityMiddleware])
+    @Middleware([
+        JwtManager.middleware,
+        authMiddleware,
+        postAuthorityMiddleware
+    ])
     public async remove(req: Request<PostRequestParams>, res: Response) {
         const { postId } = req.params
         const removed = await this.postService.updateById(parseInt(postId), req.body)
@@ -82,7 +114,10 @@ class PostController {
     }
     
     @Post(':userId/posts/:postId/likes')
-    @Middleware([JwtManager.middleware, authMiddleware])
+    @Middleware([
+        JwtManager.middleware,
+        authMiddleware
+    ])
     public async like(req: ISecureRequest, res: Response) {
         const { postId, userId } = req.params
         if (req.body.like) {
