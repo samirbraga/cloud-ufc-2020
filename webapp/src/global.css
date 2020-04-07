@@ -1,4 +1,10 @@
+:root {
+    --primaria: #f1f2f3;
+}
+
 body {
-    background-color: #f1f2f3;
-    height: 2000px;
+    background-color: var(--primaria);
+    height: 100vh;
+    margin: 0;
+    padding: 0
 }
