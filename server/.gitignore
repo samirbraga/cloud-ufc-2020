@@ -1,5 +1,7 @@
 node_modules
 .env
+.env.old
 package-lock.json
 yarn.lock
 .vscode
+rds-combined-ca-bundle.pem

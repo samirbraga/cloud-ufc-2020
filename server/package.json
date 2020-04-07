@@ -4,6 +4,7 @@
   "description": "Servidor da aplicação Preserva Sangue.",
   "main": "index.js",
   "scripts": {
+    "dev": "ts-node-dev --respawn --transpileOnly ./src/index.ts",
     "test": "jest --runInBand"
   },
   "repository": {
@@ -19,19 +20,37 @@
   "dependencies": {
     "@babel/core": "^7.8.4",
     "@babel/preset-env": "^7.8.4",
+    "@overnightjs/core": "^1.6.15",
+    "@overnightjs/jwt": "^1.1.15",
+    "@overnightjs/logger": "^1.1.10",
+    "@types/aws-sdk": "^2.7.0",
+    "@types/http-status-codes": "^1.2.0",
+    "@types/mongoose": "^5.7.8",
+    "@types/multer": "^1.4.2",
+    "@types/multer-s3": "^2.7.7",
     "async": "^3.0.1",
+    "aws-sdk": "^2.654.0",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.18.3",
     "dotenv": "^7.0.0",
     "email-templates": "^7.0.4",
     "express": "^4.16.4",
+    "express-async-handler": "^1.1.4",
     "formidable": "^1.2.1",
+    "http-status-codes": "^1.4.0",
     "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.7",
+    "multer": "^1.4.2",
+    "multer-s3": "^2.9.0",
     "pg": "^7.10.0",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^5.7.5"
+    "sequelize": "^5.7.5",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.8.3"
   },
   "devDependencies": {
+    "@types/express-jwt": "0.0.42",
+    "@types/jsonwebtoken": "^8.3.8",
     "axios": "^0.18.0"
   }
 }

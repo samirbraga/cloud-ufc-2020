@@ -3,26 +3,24 @@ create table users (
     username text not null unique,
     "password" text not null,
     email text not null unique, 
-    first_name text not null, 
-    last_name text not null, 
+    firstname text not null, 
+    lastname text not null, 
     birthdate date,
     profile_photo text,
 
 
     constraint pk_user primary key ("id")
-
 );
 
 create table posts (
     "id" int,
-    "user_id" int not null, 
+    "user_id" int not null,
     publication_date timestamp not null, 
     s3_address text not null,
-    "description" text 
+    "description" text,
 
     constraint pk_posts primary key ("id"),
     constraint fk_user foreign key ("user_id") references users("id")
-
 );
 
 create table likes (
@@ -38,9 +36,7 @@ create table likes (
 create table token_blacklist (
   "id" int,
   token text not null,
-  type text not null,
-  attempts smallint,
-  code smallint,
+  user_id smallint not null,
   
   constraint pk_token_blacklist primary key ("id")
 )
