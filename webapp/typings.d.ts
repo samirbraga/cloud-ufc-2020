@@ -33,7 +33,7 @@ declare type PostType = {
     photo: string,
     description: string,
     s3Address: string,
-    id: string
+    id: number
 }
 
 declare type PostProps = {
