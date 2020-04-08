@@ -16,13 +16,21 @@ const core_1 = require("@overnightjs/core");
 const PostService_1 = __importDefault(require("../service/PostService"));
 const authMiddleware_1 = __importDefault(require("./middlewares/authMiddleware"));
 const postAuthorityMiddleware_1 = __importDefault(require("./middlewares/postAuthorityMiddleware"));
+const multerS3_1 = require("./multerS3");
 let PostController = class PostController {
     constructor() {
         this.postService = PostService_1.default.getInstance();
     }
     async add(req, res) {
         const { userId } = req.payload;
-        const post = await this.postService.add(req.body, userId);
+        const { body } = req;
+        if (req.file && req.file.location) {
+            body.s3Address = req.file.location;
+        }
+        else {
+            delete body.s3Address;
+        }
+        const post = await this.postService.add(body, userId);
         if (post) {
             res.status(http_status_codes_1.CREATED).json(post);
         }
@@ -32,7 +40,14 @@ let PostController = class PostController {
     }
     async update(req, res) {
         const { postId } = req.params;
-        const updated = await this.postService.updateById(parseInt(postId), req.body);
+        const { body } = req;
+        if (req.file && req.file.location) {
+            body.s3Address = req.file.location;
+        }
+        else {
+            delete body.s3Address;
+        }
+        const updated = await this.postService.updateById(parseInt(postId), body);
         if (updated) {
             res.status(http_status_codes_1.OK).end();
         }
@@ -71,7 +86,9 @@ let PostController = class PostController {
         }
     }
     async like(req, res) {
-        const { postId, userId } = req.params;
+        const { postId } = req.params;
+        const { userId } = req.payload;
+        console.log(req.body);
         if (req.body.like) {
             const like = await this.postService.likeById(parseInt(postId), parseInt(userId));
             if (like) {
@@ -84,7 +101,7 @@ let PostController = class PostController {
         else {
             const unlike = await this.postService.unlikeById(parseInt(postId), parseInt(userId));
             if (unlike) {
-                res.sendStatus(http_status_codes_1.OK);
+                res.status(http_status_codes_1.OK).end();
             }
             else {
                 throw new Error('Não foi possível completar a operação.');
@@ -94,15 +111,28 @@ let PostController = class PostController {
 };
 __decorate([
     core_1.Post(':userId/posts'),
-    core_1.Middleware([jwt_1.JwtManager.middleware, authMiddleware_1.default])
+    core_1.Middleware([
+        jwt_1.JwtManager.middleware,
+        authMiddleware_1.default,
+        multerS3_1.upload.single('s3Address')
+    ])
 ], PostController.prototype, "add", null);
 __decorate([
     core_1.Put(':userId/posts/:postId'),
-    core_1.Middleware([jwt_1.JwtManager.middleware, authMiddleware_1.default, postAuthorityMiddleware_1.default])
+    core_1.Middleware([
+        jwt_1.JwtManager.middleware,
+        authMiddleware_1.default,
+        postAuthorityMiddleware_1.default,
+        multerS3_1.upload.single('s3Address')
+    ])
 ], PostController.prototype, "update", null);
 __decorate([
     core_1.Delete(':userId/posts/:postId'),
-    core_1.Middleware([jwt_1.JwtManager.middleware, authMiddleware_1.default, postAuthorityMiddleware_1.default])
+    core_1.Middleware([
+        jwt_1.JwtManager.middleware,
+        authMiddleware_1.default,
+        postAuthorityMiddleware_1.default
+    ])
 ], PostController.prototype, "remove", null);
 __decorate([
     core_1.Get(':userId/posts/:postId')
@@ -111,8 +141,11 @@ __decorate([
     core_1.Get(':userId/posts/:postId/likes')
 ], PostController.prototype, "getlikes", null);
 __decorate([
-    core_1.Post(':userId/posts/:postId/likes'),
-    core_1.Middleware([jwt_1.JwtManager.middleware, authMiddleware_1.default])
+    core_1.Post('posts/:postId/likes'),
+    core_1.Middleware([
+        jwt_1.JwtManager.middleware,
+        authMiddleware_1.default
+    ])
 ], PostController.prototype, "like", null);
 PostController = __decorate([
     core_1.Controller('api'),

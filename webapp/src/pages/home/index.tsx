@@ -13,9 +13,11 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
   const [getInfo, setGetInfo] = React.useState(true)
   const [user, setUser] = React.useState({name: "", photo: ""})
   const [token, setToken] = React.useState({id: 0, token: localStorage.getItem("token"), userId: localStorage.getItem("userId")});
-  
+  const [selectedStart, setSelectedStart] = React.useState();
+  const [selectedEnd, setSelectedEnd] = React.useState();
+
   const getPosts = async () => {
-    const response = await fetch(`${BASE_URL}/user/${token.userId}/posts`, {
+    const response = await fetch(`${BASE_URL}/feed`, {
       method: 'GET'
     })
 
@@ -23,6 +25,21 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
 
     if (await response != undefined) {
       setPosts(res)
+    }
+  }
+
+  
+  const getPostsFiltered = async () => {
+    if (selectedStart && selectedStart) {
+      const response = await fetch(`${BASE_URL}/feed?startDate=${selectedStart}&endDate=${selectedEnd}`, {
+        method: 'GET'
+      })
+  
+      const res = await response.json();
+  
+      if (await response != undefined) {
+        setPosts(res)
+      }
     }
   }
 
@@ -47,16 +64,14 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
     }
   }, [])
 
-  const [selectedStart, setSelectedStart] = React.useState(new Date());
-  const [selectedEnd, setSelectedEnd] = React.useState(new Date());
 
   const handleDateStartChance: (date: MaterialUiPickersDate) => void = (date: MaterialUiPickersDate) => {
     if ( date )
-    setSelectedStart(new Date(date.toISOString()));
+    setSelectedStart(date.toISOString());
   };
   const handleDateEndChance: (date: MaterialUiPickersDate) => void = (date: MaterialUiPickersDate) => {
     if ( date )
-      setSelectedEnd(new Date(date.toISOString()));
+      setSelectedEnd(date.toISOString());
   };
   return (
       <Grid>
@@ -69,11 +84,11 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
             alignItems="center"
             spacing={2}
           >
-            <Grid item><DateForm start={handleDateStartChance} end={handleDateEndChance} selectedEnd={selectedEnd} selectedStart={selectedStart}/></Grid>
+            <Grid item><DateForm onSubmit={() => getPostsFiltered()} start={handleDateStartChance} end={handleDateEndChance} selectedEnd={selectedEnd} selectedStart={selectedStart}/></Grid>
 
             {posts.map((post: PostType, i: number) => (
               <Grid item key={i}>
-                <Post photo={post.s3Address} description={post.description} name={user.name} id={post.id} user_id={token.userId} profile={user.photo}/>
+                <Post likes={post.users} photo={post.s3Address} description={post.description} name={user.name} id={post.id} user_id={token.userId} profile={user.photo}/>
               </Grid>
             ))}
           </Grid>

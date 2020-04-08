@@ -9,6 +9,8 @@ const Like_1 = __importDefault(require("./Like"));
 const User_1 = __importDefault(require("../model/User"));
 const Like_2 = __importDefault(require("../model/Like"));
 const LikeCount_1 = __importDefault(require("./LikeCount"));
+const sequelize_1 = __importDefault(require("sequelize"));
+const { Op } = sequelize_1.default;
 class PostRepo extends Repository_1.default {
     constructor() {
         super(...arguments);
@@ -28,8 +30,12 @@ class PostRepo extends Repository_1.default {
         });
     }
     getAllWithLikes(filter) {
+        console.log(filter);
         return Post_1.default.findAll({
-            where: Object.assign({}, filter),
+            where: filter,
+            order: [
+                ['publicationDate', 'DESC']
+            ],
             include: [{
                     model: User_1.default,
                     through: {
@@ -49,7 +55,12 @@ class PostRepo extends Repository_1.default {
         });
     }
     insert(data) {
-        return Post_1.default.create(data);
+        const postId = this.generateId();
+        this.likeCountRepo.insert({
+            postId,
+            likesCount: 0
+        });
+        return Post_1.default.create(Object.assign({ id: postId }, data));
     }
     updateById(id, updates) {
         return Post_1.default.update(updates, {
@@ -59,33 +70,17 @@ class PostRepo extends Repository_1.default {
         });
     }
     likeById(postId, userId) {
-        return new Promise((resolve, reject) => {
-            Promise.all([
-                this.likeRepo.insert({
-                    postId,
-                    userId
-                }),
-                this.likeCountRepo.increment(postId)
-            ])
-                .then(([like]) => {
-                resolve(like);
-            })
-                .catch(reject);
+        this.likeCountRepo.increment(postId).then(() => { }).catch(err => { });
+        return this.likeRepo.insert({
+            postId,
+            userId
         });
     }
     unlikeById(postId, userId) {
-        return new Promise((resolve, reject) => {
-            Promise.all([
-                this.likeRepo.destroy({
-                    postId,
-                    userId
-                }),
-                this.likeCountRepo.dencrement(postId)
-            ])
-                .then(([removed]) => {
-                resolve(removed);
-            })
-                .catch(reject);
+        this.likeCountRepo.dencrement(postId).then(() => { }).catch(err => { });
+        return this.likeRepo.destroy({
+            postId,
+            userId
         });
     }
     destroyById(id) {
@@ -108,7 +103,7 @@ class PostRepo extends Repository_1.default {
     getBetweenDates(startDate, endDate) {
         return this.getAllWithLikes({
             publicationDate: {
-                $between: [startDate, endDate]
+                [Op.between]: [startDate.toISOString(), endDate.toISOString()]
             }
         });
     }

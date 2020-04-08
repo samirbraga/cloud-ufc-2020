@@ -1,7 +1,8 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import { AppBar, Toolbar, IconButton, Typography, Button, useScrollTrigger, Slide, Grid, Avatar } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/menu';
 import styles from './styles.css';
+import BASE_URL from '../../endpoint';
 import SearchIcon from '@material-ui/icons/Search';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 
@@ -13,6 +14,25 @@ interface HeaderProps {
 
 const Header: FunctionComponent<HeaderProps> = ({ title }) => {
     const trigger = useScrollTrigger({ target: window });
+    const [user, setUser] = React.useState({name: "", photo: ""})
+    const [token, setToken] = React.useState({id: 0, token: localStorage.getItem("token"), userId: localStorage.getItem("userId")});
+
+    const getUser = async () => {
+        console.log(token)
+        const response = await fetch(`${BASE_URL}/user/${token.userId}`, {
+          method: 'GET'
+        })
+    
+        const res = await response.json();
+    
+        if (await response != undefined) {
+          setUser({name: `${res.firstName} ${res.lastName}`, photo: res.profilePhoto})
+        }
+      }
+
+      useEffect(() => {
+          getUser()
+      }, [])
 
     return (
         <Slide appear={false} direction="down" in={!trigger}>
@@ -43,7 +63,7 @@ const Header: FunctionComponent<HeaderProps> = ({ title }) => {
                         </Grid>
                         <Grid item>
                             <IconButton edge="start" color="inherit" aria-label="menu">
-                                <NavLink to="/settings"><Avatar aria-label="avatar" >R</Avatar></NavLink>
+                                <NavLink to="/settings"><Avatar aria-label="avatar" src={user.photo} /></NavLink>
                             </IconButton>
                         </Grid>
                     </Grid>

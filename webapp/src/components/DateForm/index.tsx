@@ -31,14 +31,13 @@ interface DateFormProps {
     start: (date: MaterialUiPickersDate) => void,
     end: (date: MaterialUiPickersDate) => void,
     selectedStart: Date,
-    selectedEnd: Date
+    selectedEnd: Date,
+    onSubmit: () => void
 };
 
-const DateForm: FunctionComponent<DateFormProps> = ({start, end, selectedEnd, selectedStart}) => {
-const trigger = useScrollTrigger({ target: window });
-const classes = useStyles();
-  
-
+const DateForm: FunctionComponent<DateFormProps> = ({onSubmit, start, end, selectedEnd, selectedStart}) => {
+  const classes = useStyles();
+    
     return (
         <Card className={classes.root}>
 
@@ -88,7 +87,7 @@ const classes = useStyles();
               </Grid>
               </Grid>
               <Grid item>
-                <Button variant="contained" color="primary" size="small" onClick={() => console.log("foi")}>Buscar</Button>
+                <Button variant="contained" color="primary" size="small" onClick={() => onSubmit()}>Buscar</Button>
               </Grid>
             </Grid>
         </CardContent>

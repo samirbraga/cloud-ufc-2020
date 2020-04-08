@@ -10,28 +10,15 @@ const User_1 = __importDefault(require("../repository/User"));
 const TokenBlackList_1 = __importDefault(require("../repository/TokenBlackList"));
 const credentials = new aws_sdk_1.default.Credentials({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-});
-exports.s3 = new aws_sdk_1.default.S3({
-    accessKeyId: credentials.accessKeyId,
-    secretAccessKey: credentials.secretAccessKey
-});
-credentials.refresh(err => {
-    exports.s3 = new aws_sdk_1.default.S3({
-        accessKeyId: credentials.accessKeyId,
-        secretAccessKey: credentials.secretAccessKey,
-        sessionToken: credentials.sessionToken
-    });
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    sessionToken: process.env.AWS_SESSION_TOKEN
 });
 setInterval(() => {
-    credentials.refresh(err => {
-        exports.s3 = new aws_sdk_1.default.S3({
-            accessKeyId: credentials.accessKeyId,
-            secretAccessKey: credentials.secretAccessKey,
-            sessionToken: credentials.sessionToken
-        });
-    });
-}, 1 * 60 * 60 * 1000);
+    if (credentials.needsRefresh) {
+        credentials.refresh(err => { });
+    }
+}, 2 * 60 * 1000);
+exports.s3 = new aws_sdk_1.default.S3(credentials);
 class UserService {
     constructor() {
         this.userRepository = new User_1.default();
@@ -74,7 +61,7 @@ class UserService {
         return this.userRepository.insert(newUser);
     }
     async login(username, password) {
-        const user = await this.userRepository.getByUserName(username);
+        const user = await this.userRepository.getByUserName(username, true);
         if (user && user.password === password) {
             return user.id;
         }
@@ -83,10 +70,8 @@ class UserService {
         }
     }
     deleteImage(imageUrl) {
-        while (!this.s3)
-            continue;
         return new Promise((resolve, reject) => {
-            this.s3.deleteObject({
+            exports.s3.deleteObject({
                 Bucket: process.env.AWS_S3_BUCKET,
                 Key: url_1.default.parse(imageUrl).path
             }).send(err => {
@@ -102,14 +87,20 @@ class UserService {
     async updateById(id, newUser) {
         const oldUser = await this.userRepository.getById(id);
         if (newUser.profilePhoto) {
-            await this.deleteImage(oldUser.profilePhoto);
+            try {
+                await this.deleteImage(oldUser.profilePhoto);
+            }
+            catch (_a) { }
         }
         const [updated] = await this.userRepository.updateById(id, newUser);
         return updated > 0;
     }
     async removeById(id) {
         const oldUser = await this.userRepository.getById(id);
-        await this.deleteImage(oldUser.profilePhoto);
+        try {
+            await this.deleteImage(oldUser.profilePhoto);
+        }
+        catch (_a) { }
         const removed = await this.userRepository.destroyById(id);
         return removed > 0;
     }
@@ -119,6 +110,10 @@ class UserService {
     }
     async getAll() {
         const users = await this.userRepository.getAll({});
+        return users;
+    }
+    async searchByUsername(username) {
+        const users = await this.userRepository.searchByUsername(username);
         return users;
     }
 }

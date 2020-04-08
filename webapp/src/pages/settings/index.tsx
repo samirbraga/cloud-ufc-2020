@@ -111,13 +111,20 @@ const Settings: FunctionComponent = () => {
         setLoading(true);
   
         const form = new FormData()
-        form.append('username', selectedUser)
-        form.append('password', selectedPassword)
-        form.append('email', selectedEmail)
-        form.append('birthdate', selectedBirthdate.toISOString())
-        form.append('firstName', selectedFirstName)
-        form.append('lastName', selectedLastName)
-        form.append('profilePhoto', selectedPhoto)
+        if (selectedUser)
+          form.append('username', selectedUser)
+        if (selectedPassword)
+          form.append('password', selectedPassword)
+        if (selectedEmail)
+          form.append('email', selectedEmail)
+        if (selectedBirthdate)
+          form.append('birthdate', selectedBirthdate.toISOString())
+        if (selectedFirstName)
+          form.append('firstName', selectedFirstName)
+        if (selectedLastName)
+          form.append('lastName', selectedLastName)
+        if (selectedPhoto)
+          form.append('profilePhoto', selectedPhoto)
 
         var myHeaders = new Headers()
         myHeaders.append("Authorization", `Bearer ${token.token}`);

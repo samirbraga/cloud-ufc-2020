@@ -66,7 +66,6 @@ export default function OutlinedCard() {
     if (await response != undefined) {
       setBuscar(true)
       setUsers(res)
-      console.log(res)
     }
 
   }

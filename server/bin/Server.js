@@ -19,7 +19,7 @@ class AppServer extends core_1.Server {
         this.app.use((_, res, next) => {
             res.setHeader("Access-Control-Allow-Origin", "*");
             res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-            res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Referer, User-Agent, x-signup-token, x-access-token, x-recover-token");
+            res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Referer, User-Agent, Authorization");
             next();
         });
         this.setupControllers();

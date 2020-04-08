@@ -27,30 +27,30 @@ interface PostProps {
     name: string,
     profile: string,
     id: number,
-    user_id: number
+    user_id: number,
+    likes: any[]
 };
 
-const Post: FunctionComponent<PostProps> = ( { photo, description, name, profile, id, user_id } ) => {
+const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, profile, id, user_id } ) => {
   const trigger = useScrollTrigger({ target: window });
   const classes = useStyles();
   const [token, setToken] = React.useState({id: 0, token: localStorage.getItem("token"), userId: localStorage.getItem("userId")});
-  const [color, setColor] = React.useState("")
+  const [liked, setLiked] = React.useState(likes?.some(like => like.id === parseInt(token.userId)))
 
   const handleSubmit = async () => {
       try {
-        setColor("secondary")
         var myHeaders = new Headers()
+        myHeaders.append("Content-Type", "application/json")
         myHeaders.append("Authorization", `Bearer ${token.token}`);
 
-        const response = await fetch(`${BASE_URL}/${user_id}/likes/${id}`, {
+        const response = await fetch(`${BASE_URL}/posts/${id}/likes`, {
           method: 'POST',
           body: JSON.stringify ({
-            like: true,
+            like: !liked,
           }),
           headers: myHeaders
-          
         })
-        const user = await response.json();
+        setLiked(!liked)
     
         if (await response != undefined) {
           console.log("deu certo")
@@ -83,9 +83,9 @@ const Post: FunctionComponent<PostProps> = ( { photo, description, name, profile
         </CardContent>
         <CardActions disableSpacing>
           <IconButton aria-label="add to favorites" onClick={handleSubmit}>
-            <FavoriteIcon color={color}/>
+            <FavoriteIcon color={liked ? 'secondary' : 'inherit'}/>
           </IconButton>
-          <Typography  variant="subtitle1" color="textSecondary" component="p">100</Typography>
+          <Typography  variant="subtitle1" color="textSecondary" component="p">{likes?.length + (liked ? 1 : 0)}</Typography>
         </CardActions>
       </Card>
     );

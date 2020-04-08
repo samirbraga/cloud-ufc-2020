@@ -6,27 +6,37 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Repository_1 = __importDefault(require("./Repository"));
 const User_1 = __importDefault(require("../model/User"));
 const Post_1 = __importDefault(require("./Post"));
+const sequelize_1 = __importDefault(require("sequelize"));
 class UserRepo extends Repository_1.default {
     constructor() {
         super(...arguments);
         this.postRepo = new Post_1.default();
     }
-    getById(id) {
+    getById(id, showPassword) {
         return User_1.default.findOne({
             where: {
                 id
+            },
+            attributes: {
+                exclude: [showPassword === true ? '' : 'password']
             }
         });
     }
     getAll(filter) {
         return User_1.default.findAll({
-            where: Object.assign({}, filter)
+            where: Object.assign({}, filter),
+            attributes: {
+                exclude: ['password']
+            }
         });
     }
-    getByUserName(username) {
+    getByUserName(username, showPassword) {
         return User_1.default.findOne({
             where: {
                 username
+            },
+            attributes: {
+                exclude: [showPassword === true ? '' : 'password']
             }
         });
     }
@@ -42,7 +52,12 @@ class UserRepo extends Repository_1.default {
     searchByUsername(username) {
         return User_1.default.findAll({
             where: {
-                username
+                username: {
+                    [sequelize_1.default.Op.iLike]: `%${username}%`
+                }
+            },
+            attributes: {
+                exclude: ['password']
             }
         });
     }
