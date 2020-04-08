@@ -30,6 +30,9 @@ class PostRepo extends IRepository<Post, PostEntity> {
             where: {
                 ...filter
             },
+            order: [
+                ['publicationDate', 'DESC']
+            ],
             include: [{
                 model: User,
                 through: {

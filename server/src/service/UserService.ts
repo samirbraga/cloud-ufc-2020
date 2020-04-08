@@ -4,31 +4,19 @@ import url from 'url'
 import UserRepo from '../repository/User';
 import TokenBlackListRepo from '../repository/TokenBlackList';
 
-aws.config.update({
+const credentials = new aws.Credentials({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     sessionToken: process.env.AWS_SESSION_TOKEN
 })
 
-export const s3 = new aws.S3()
+setInterval(() => {
+    if (credentials.needsRefresh) {
+        credentials.refresh(err => {})
+    }
+}, 2 * 60 * 1000)
 
-// credentials.refresh(err => {
-//     s3 = new aws.S3({
-//         accessKeyId: credentials.accessKeyId,
-//         secretAccessKey: credentials.secretAccessKey,
-//         sessionToken: credentials.sessionToken
-//     })
-// })
-    
-// setInterval(() => {
-//     credentials.refresh(err => {
-//         s3 = new aws.S3({
-//             accessKeyId: credentials.accessKeyId,
-//             secretAccessKey: credentials.secretAccessKey,
-//             sessionToken: credentials.sessionToken
-//         })
-//     })
-// }, 1 * 60 * 60 * 1000)
+export const s3 = new aws.S3(credentials)
 
 class UserService {
     private userRepository = new UserRepo()
@@ -79,7 +67,7 @@ class UserService {
     }
 
     public async login(username: string, password: string): Promise<number | undefined> {
-        const user = await this.userRepository.getByUserName(username)
+        const user = await this.userRepository.getByUserName(username, true)
         if (user && user.password === password) {
             return user.id
         } else {

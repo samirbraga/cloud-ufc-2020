@@ -113,13 +113,14 @@ class PostController {
         }
     }
     
-    @Post(':userId/posts/:postId/likes')
+    @Post('posts/:postId/likes')
     @Middleware([
         JwtManager.middleware,
         authMiddleware
     ])
     public async like(req: ISecureRequest, res: Response) {
-        const { postId, userId } = req.params
+        const { postId } = req.params
+        const { userId } = req.payload
         if (req.body.like) {
             const like = await this.postService.likeById(parseInt(postId), parseInt(userId))
             
@@ -132,7 +133,7 @@ class PostController {
             const unlike = await this.postService.unlikeById(parseInt(postId), parseInt(userId))
             
             if (unlike) {
-                res.sendStatus(OK)
+                res.status(OK).end()
             } else {
                 throw new Error('Não foi possível completar a operação.')
             }

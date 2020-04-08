@@ -7,10 +7,13 @@ import sequelize from 'sequelize';
 class UserRepo extends IRepository<User, UserEntity> {
     private postRepo = new PostRepo()
 
-    getById(id: number) {
+    getById(id: number, showPassword?: boolean) {
         return User.findOne({
             where: {
                 id
+            },
+            attributes: {
+                exclude: [showPassword === true ? '' : 'password']
             }
         })
     }
@@ -19,14 +22,20 @@ class UserRepo extends IRepository<User, UserEntity> {
         return User.findAll({
             where: {
                 ...filter
+            },
+            attributes: {
+                exclude: ['password']
             }
         })
     }
 
-    getByUserName(username: string) {
+    getByUserName(username: string, showPassword?: boolean) {
         return User.findOne({
             where: {
                 username
+            },
+            attributes: {
+                exclude: [showPassword === true ? '' : 'password']
             }
         })
     }
@@ -50,6 +59,9 @@ class UserRepo extends IRepository<User, UserEntity> {
                 username: {
                     [sequelize.Op.iLike]: `%${username}%`
                 }
+            },
+            attributes: {
+                exclude: ['password']
             }
         })
     }
