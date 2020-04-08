@@ -4,11 +4,11 @@ import styles from './styles.less';
 
 import { green } from '@material-ui/core/colors';
 
-import { NavLink } from 'umi';
+import { NavLink, history } from 'umi';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Card, Typography, Grid, CardContent, CircularProgress, Button, IconButton, TextField, InputLabel, Input, Container } from '@material-ui/core'
+import { Card, Typography, Avatar, Dialog ,DialogActions ,  Grid,DialogContent ,DialogContentText ,DialogTitle , CardContent, CircularProgress, Button, IconButton, TextField, InputLabel, Input, Container } from '@material-ui/core'
 
 import DateFnsUtils from '@date-io/date-fns';
 
@@ -36,14 +36,6 @@ interface SignupProps {
 };
 
 const Signup: FunctionComponent<SignupProps> = ({ fromNotifications }) => {
-  useEffect(() => {
-    if (fromNotifications) {
-  
-      console.log(fromNotifications)
-    } else {
-      console.log(fromNotifications)
-    }
-  })
 
   const classes = useStyles();
 
@@ -57,6 +49,9 @@ const Signup: FunctionComponent<SignupProps> = ({ fromNotifications }) => {
   const [selectedPassword, setSelectedPassword] = React.useState("");
   const [selectedBirthdate, setSelectedBirthdate] = React.useState(new Date());
   const [selectedPhoto, setSelectedPhoto] = React.useState("");
+  const [contentDialog, setContentDialog] = React.useState("");
+  const [titleDialog, setTitleDialog] = React.useState("");
+  const [photo, setPhoto] = React.useState("");
 
 
   const handleEmailChange: (props: TextFieldProps) => void = (props: TextFieldProps) => {
@@ -89,6 +84,11 @@ const Signup: FunctionComponent<SignupProps> = ({ fromNotifications }) => {
 
   const handlePhotoChange =  (event) => {
     setSelectedPhoto(event.target.files[0])
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      setPhoto(e.target.result)
+    }
+    reader.readAsDataURL(event.target.files[0])
   }
 
   const handleSubmit = async () => {
@@ -118,23 +118,39 @@ const Signup: FunctionComponent<SignupProps> = ({ fromNotifications }) => {
         if (await response != undefined) {
           setSuccess(true);
           setLoading(false);
-          console.log(user)
-          console.log("Veio aqui mas nao parou")
+
+          setTitleDialog("Sucesso")
+          setContentDialog("Usuário cadastrado com sucesso")
   
         } else {
           setSuccess(true);
           setLoading(false);
-          console.log("Veio aqui mas nao parou")
+
+          setTitleDialog("Erro")
+          setContentDialog("Erro ao cadastrar usuário")
         }
 
-      } finally {
+      } catch {
         setSuccess(true);
         setLoading(false);
+
+        setTitleDialog("Erro")
+        setContentDialog("Erro ao cadastrar usuário")
       }
 
     }
   };
+  const handleLogin = () => {
+    history.push({
+      pathname: '/'
+      
+    });
+  };
 
+  const handleClose = () => {
+    setSuccess(false);
+    setLoading(false);
+  };
   return (
     <Container className={styles.container} maxWidth="sm">
       <Grid
@@ -187,7 +203,7 @@ const Signup: FunctionComponent<SignupProps> = ({ fromNotifications }) => {
                       <KeyboardDatePicker
                         disableToolbar
                         variant="inline"
-                        format="MM/dd/yyyy"
+                        format="dd/MM/yyyy"
                         margin="normal"
                         id="date-picker-inline"
                         label="Data de Nascimento"
@@ -203,7 +219,7 @@ const Signup: FunctionComponent<SignupProps> = ({ fromNotifications }) => {
                     <input accept="image/*" className={styles.input} id="icon-button-file" type="file" onChange={handlePhotoChange}/>
                     <label htmlFor="icon-button-file">
                       <IconButton color="primary" aria-label="upload picture" component="span">
-                        <PhotoCamera />
+                        <Avatar aria-label="avatar" src={photo} />
                       </IconButton>
                     </label>
                   </Grid>
@@ -245,6 +261,27 @@ const Signup: FunctionComponent<SignupProps> = ({ fromNotifications }) => {
           </Card>
         </Grid>
       </Grid>
+
+      <Dialog
+          open={success}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{titleDialog}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {contentDialog}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Fechar
+            </Button>
+            <Button onClick={handleLogin} color="primary" autoFocus>
+              Login
+            </Button>
+          </DialogActions>
+        </Dialog>
     </Container>
   );
 }

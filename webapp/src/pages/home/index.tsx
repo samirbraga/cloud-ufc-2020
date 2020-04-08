@@ -44,7 +44,6 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
   }
 
   const getUser = async () => {
-    console.log(token)
     const response = await fetch(`${BASE_URL}/user/${token.userId}`, {
       method: 'GET'
     })
@@ -88,7 +87,15 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
 
             {posts.map((post: PostType, i: number) => (
               <Grid item key={i}>
-                <Post likes={post.users} photo={post.s3Address} description={post.description} name={user.name} id={post.id} user_id={token.userId} profile={user.photo}/>
+                <Post 
+                  id={post.id} 
+                  likes={post.users} 
+                  description={post.description} 
+                  photo={post.s3Address} 
+                  name={user.name} 
+                  userId={post.userId}  
+                  profile={user.photo}
+                  />
               </Grid>
             ))}
           </Grid>

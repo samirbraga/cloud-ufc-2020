@@ -4,7 +4,7 @@ import styles from './styles.less';
 import BASE_URL from '../../endpoint';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 
-import { NavLink } from 'umi';
+import { NavLink, history } from 'umi';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { 
@@ -181,6 +181,16 @@ const Settings: FunctionComponent = () => {
     }
   }, [])
 
+
+  const handleSignout = () => {
+    localStorage.removeItem("token")
+    localStorage.removeItem("userId")
+    history.push({
+      pathname: '/'
+      
+    });
+  };
+
   return (
     <Container className={styles.container} maxWidth="sm">
       <Header title='Instagram' />
@@ -260,6 +270,24 @@ const Settings: FunctionComponent = () => {
                 </Grid>
               </form>
             </CardContent>            
+          </Card>
+        </Grid>
+
+        <Grid item>
+          <Card variant="outlined">
+            <CardContent>
+                <Grid
+                  container
+                  direction="column"
+                  justify="center"
+                  alignItems="center"
+                  spacing={2}
+                >
+                  <Grid item>
+                    <Button variant="contained" color="secondary" size="small" onClick={handleSignout} disabled={loading}>Sair</Button>
+                  </Grid>
+                </Grid>
+            </CardContent>
           </Card>
         </Grid>
       </Grid>

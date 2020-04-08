@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import {Collapse, AppBar, Toolbar, IconButton, CardMedia, CardActions, CardContent, CardHeader, Avatar, Card, Typography, Button, useScrollTrigger, Slide } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/menu';
 import styles from './styles.css';
@@ -27,15 +27,37 @@ interface PostProps {
     name: string,
     profile: string,
     id: number,
-    user_id: number,
+    userId: number,
     likes: any[]
 };
 
-const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, profile, id, user_id } ) => {
+const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, profile, id, userId } ) => {
   const trigger = useScrollTrigger({ target: window });
+  const [getInfo, setGetInfo] = React.useState(true)
+
   const classes = useStyles();
   const [token, setToken] = React.useState({id: 0, token: localStorage.getItem("token"), userId: localStorage.getItem("userId")});
   const [liked, setLiked] = React.useState(likes?.some(like => like.id === parseInt(token.userId)))
+  const [user, setUser] = React.useState({name: "", photo: ""})
+  
+  const getUser = async () => {
+    const response = await fetch(`${BASE_URL}/user/${userId}`, {
+      method: 'GET'
+    })
+
+    const res = await response.json();
+
+    if (await response != undefined) {
+      setUser({name: `${res.firstName} ${res.lastName}`, photo: res.profilePhoto})
+    }
+  }
+
+  useEffect(() => {
+    if(getInfo) {
+      setGetInfo(false)
+      getUser()
+    }
+  }, [])
 
   const handleSubmit = async () => {
       try {
@@ -53,7 +75,6 @@ const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, p
         setLiked(!liked)
     
         if (await response != undefined) {
-          console.log("deu certo")
   
         }
 
@@ -67,9 +88,9 @@ const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, p
         <Card className={classes.root}>
         <CardHeader
           avatar={
-            <Avatar aria-label="profile ophoto" src={profile} />
+            <Avatar aria-label="profile ophoto" src={user.photo} />
           }
-          title={name}
+          title={user.name}
         />
         <CardMedia
           className={classes.media}
