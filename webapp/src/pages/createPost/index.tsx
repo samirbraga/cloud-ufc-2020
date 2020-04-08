@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   buttonProgress: {
     color: green[500],
     position: 'absolute',
-    top: '60%',
+    top: '72%',
     left: '50%',
     marginTop: -12,
     marginLeft: -12,
@@ -121,9 +121,10 @@ const Create: FunctionComponent<CreateProps> = ({ token }) => {
     
         const user = await response.json();
     
-        if (await response != undefined) {
+        if (await response != undefined && user.status !== "error") {
           setSuccess(true);
           setLoading(false);
+          console.log(user)
 
           setTitleDialog("Sucesso")
           setContentDialog("Postagem criada com sucesso")
