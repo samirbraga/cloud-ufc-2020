@@ -133,7 +133,7 @@ export default function OutlinedCard() {
         }
         {
           (!buscar) && posts.map((post: PostType, i: number) => {
-            return <Grid item key={i} onClick={showProfile}> <Post description={post.description} photo={post.s3Address} name={buscaInfo.name} profile={buscaInfo.photo}/> </Grid>
+            return <Grid item key={i} onClick={showProfile}> <Post id={post.id} description={post.description} photo={post.s3Address} name={buscaInfo.name} profile={buscaInfo.photo}/> </Grid>
           })
         }
       </Grid>
