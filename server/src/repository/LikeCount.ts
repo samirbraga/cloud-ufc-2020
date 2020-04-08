@@ -22,7 +22,7 @@ class LikeCountRepo extends IRepository<ILikeCount, LikeCountEntity> {
             postId
         }, {
             $inc: {
-                'likeCount': 1
+                'likesCount': 1
             }
         }).exec()
     }
@@ -33,7 +33,7 @@ class LikeCountRepo extends IRepository<ILikeCount, LikeCountEntity> {
             postId
         }, {
             $dec: {
-                'likeCount': 1
+                'likesCount': 1
             }
         }).exec()
     }

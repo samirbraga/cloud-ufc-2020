@@ -92,8 +92,10 @@ class UserService {
 
     public async updateById(id: number, newUser: UserEntity): Promise<boolean> {
         const oldUser = await this.userRepository.getById(id)
-        if (newUser.profilePhoto) {  
-            await this.deleteImage(oldUser.profilePhoto) 
+        if (newUser.profilePhoto) {
+            try {
+                await this.deleteImage(oldUser.profilePhoto) 
+            } catch {}
         }
 
         const [updated] = await this.userRepository.updateById(id, newUser)
@@ -102,7 +104,9 @@ class UserService {
 
     public async removeById(id: number): Promise<boolean> {
         const oldUser = await this.userRepository.getById(id)
-        await this.deleteImage(oldUser.profilePhoto)
+        try {
+            await this.deleteImage(oldUser.profilePhoto)
+        } catch {}
         const removed = await this.userRepository.destroyById(id)
         return removed > 0
     }

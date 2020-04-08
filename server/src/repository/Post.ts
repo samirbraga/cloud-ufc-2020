@@ -4,6 +4,9 @@ import LikeRepo from './Like';
 import User from '../model/User';
 import Like from '../model/Like';
 import LikeCountRepo from './LikeCount';
+import sequelize from 'sequelize'
+
+const { Op } = sequelize
 
 class PostRepo extends IRepository<Post, PostEntity> {
     private likeRepo: LikeRepo = new LikeRepo()
@@ -26,10 +29,9 @@ class PostRepo extends IRepository<Post, PostEntity> {
     }
 
     getAllWithLikes(filter: any) {
+        console.log(filter)
         return Post.findAll({
-            where: {
-                ...filter
-            },
+            where: filter,
             order: [
                 ['publicationDate', 'DESC']
             ],
@@ -54,7 +56,15 @@ class PostRepo extends IRepository<Post, PostEntity> {
     }
 
     insert(data: PostEntity) {
-        return Post.create(data)
+        const postId = this.generateId()
+        this.likeCountRepo.insert({
+            postId,
+            likesCount: 0
+        })
+        return Post.create({
+            id: postId,
+            ...data
+        })
     }
 
     updateById(id: number, updates: Partial<PostEntity>) {
@@ -66,35 +76,20 @@ class PostRepo extends IRepository<Post, PostEntity> {
     }
 
     likeById(postId: number, userId: number) {
-        return new Promise((resolve, reject) => {
-            Promise.all([
-                this.likeRepo.insert({
-                    postId,
-                    userId
-                }),
-                this.likeCountRepo.increment(postId)
-            ])
-            .then(([like]) => {
-                resolve(like)
-            })
-            .catch(reject)
-        }) as Promise<LikeEntity>
+        this.likeCountRepo.increment(postId).then(() => {}).catch(err => {})
+        return this.likeRepo.insert({
+            postId,
+            userId
+        })
     }
 
     unlikeById(postId: number, userId: number) {
-        return new Promise((resolve, reject) => {
-            Promise.all([
-                this.likeRepo.destroy({
-                    postId,
-                    userId
-                }),
-                this.likeCountRepo.dencrement(postId)
-            ])
-            .then(([removed]) => {
-                resolve(removed)
-            })
-            .catch(reject)
-        }) as Promise<number>
+        this.likeCountRepo.dencrement(postId).then(() => {}).catch(err => {})
+        
+        return this.likeRepo.destroy({
+            postId,
+            userId
+        })
     }
 
     destroyById(id: number) {
@@ -122,7 +117,7 @@ class PostRepo extends IRepository<Post, PostEntity> {
     getBetweenDates(startDate: Date, endDate: Date) {
         return this.getAllWithLikes({
             publicationDate: {
-                $between: [startDate, endDate]
+                [Op.between]: [startDate.toISOString(), endDate.toISOString()]
             }
         })
     }

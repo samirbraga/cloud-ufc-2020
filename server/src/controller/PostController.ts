@@ -29,7 +29,6 @@ class PostController {
         
         const { body } = req
 
-        console.log(body)
         if (req.file && req.file.location) {
             body.s3Address = req.file.location
         } else {
@@ -121,6 +120,7 @@ class PostController {
     public async like(req: ISecureRequest, res: Response) {
         const { postId } = req.params
         const { userId } = req.payload
+        console.log(req.body)
         if (req.body.like) {
             const like = await this.postService.likeById(parseInt(postId), parseInt(userId))
             

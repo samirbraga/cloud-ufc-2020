@@ -21,7 +21,7 @@ class LikeCountRepo extends Repository_1.default {
             postId
         }, {
             $inc: {
-                'likeCount': 1
+                'likesCount': 1
             }
         }).exec();
     }
@@ -30,7 +30,7 @@ class LikeCountRepo extends Repository_1.default {
             postId
         }, {
             $dec: {
-                'likeCount': 1
+                'likesCount': 1
             }
         }).exec();
     }

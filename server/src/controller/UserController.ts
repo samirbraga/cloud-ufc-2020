@@ -128,6 +128,7 @@ class UserController {
         const { userId } = req.params
         const { body } = req
 
+
         if (req.file && req.file.location) {
             body.profilePhoto = req.file.location
         } else {
