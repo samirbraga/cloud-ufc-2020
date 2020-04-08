@@ -4,11 +4,17 @@ import styles from './styles.less';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import { green } from '@material-ui/core/colors';
 
-import { NavLink } from 'umi';
+import { NavLink, history } from 'umi';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { 
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Card, 
+  CardMedia,
   Typography, 
   Grid, 
   CardContent, 
@@ -39,13 +45,18 @@ const useStyles = makeStyles((theme) => ({
   large: {
     width: theme.spacing(8),
     height: theme.spacing(8),
-  }, buttonProgress: {
+  }, 
+  buttonProgress: {
     color: green[500],
     position: 'absolute',
     top: '60%',
     left: '50%',
     marginTop: -12,
     marginLeft: -12,
+  },
+  media: {
+    height: 0,
+    paddingTop: '56.25%', // 16:9
   },
 }));
 interface CreateProps {
@@ -57,18 +68,27 @@ const Create: FunctionComponent<CreateProps> = ({ token }) => {
 
   const [loading, setLoading] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
+  const [photo, setPhoto] = React.useState("#");
 
   const [tok, setToken] = React.useState({id: 0, token: "", userId: 0});
 
   const [selectedPhoto, setSelectedPhoto] = React.useState("");
   const [selectedDescription, setSelectedDescription] = React.useState("");
-  
+
+  const [contentDialog, setContentDialog] = React.useState("");
+  const [titleDialog, setTitleDialog] = React.useState("");
+
   const handleDescriptionChange: (props: TextFieldProps) => void = (props: TextFieldProps) => {
     setSelectedDescription(props.target.value);
   };
 
   const handlePhotoChange =  (event) => {
     setSelectedPhoto(event.target.files[0])
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      setPhoto(e.target.result)
+    }
+    reader.readAsDataURL(event.target.files[0])
   }
 
   useEffect(() => {
@@ -82,7 +102,6 @@ const Create: FunctionComponent<CreateProps> = ({ token }) => {
       try {
         setSuccess(false);
         setLoading(true);
-        console.log("veio aqui")
 
         var myHeaders = new Headers()
         myHeaders.append("Authorization", `Bearer ${tok.token}`);
@@ -92,7 +111,6 @@ const Create: FunctionComponent<CreateProps> = ({ token }) => {
         form.append('publicationDate', new Date().toISOString())
         form.append('description', selectedDescription)
     
-        console.log(selectedDescription)
         const response = await fetch(`${BASE_URL}/${tok.userId}/posts`, {
           method: 'POST',
           headers: myHeaders,
@@ -106,20 +124,39 @@ const Create: FunctionComponent<CreateProps> = ({ token }) => {
         if (await response != undefined) {
           setSuccess(true);
           setLoading(false);
-          console.log(user)
+
+          setTitleDialog("Sucesso")
+          setContentDialog("Postagem criada com sucesso")
   
         } else {
           setSuccess(true);
           setLoading(false);
 
+          setTitleDialog("Erro")
+          setContentDialog("Não foi possível criar a postagem")
         }
 
-      } finally {
+      } catch {
         setSuccess(true);
         setLoading(false);
+
+        setTitleDialog("Erro")
+        setContentDialog("Não foi possível criar a postagem")
       }
 
     }
+  };
+
+  const handleLogin = () => {
+    history.push({
+      pathname: '/home'
+      
+    });
+  };
+
+  const handleClose = () => {
+    setSuccess(false);
+    setLoading(false);
   };
 
   return (
@@ -136,6 +173,7 @@ const Create: FunctionComponent<CreateProps> = ({ token }) => {
         <Grid item>
           <Card variant="outlined">
             <CardContent>
+                  
               <Typography variant="h4" component="h4" align="center">
                 Criar Postagem
               </Typography>
@@ -156,7 +194,20 @@ const Create: FunctionComponent<CreateProps> = ({ token }) => {
                       </IconButton>
                     </label>
                   </Grid>
-
+                  </Grid>
+                  
+                  <CardMedia
+                    className={classes.media}
+                    image={photo}
+                    title="post"
+                  />
+                <Grid
+                  container
+                  direction="column"
+                  justify="center"
+                  alignItems="center"
+                  spacing={2}
+                >
                   <Grid item>
                     <TextField id="standard-basic" label="Descrição" type="description" rows={4} multiline onChange={handleDescriptionChange}/>
                   </Grid>
@@ -171,6 +222,27 @@ const Create: FunctionComponent<CreateProps> = ({ token }) => {
           </Card>
         </Grid>
       </Grid>
+
+      <Dialog
+          open={success}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{titleDialog}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {contentDialog}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Fechar
+            </Button>
+            <Button onClick={handleLogin} color="primary" autoFocus>
+              Feed
+            </Button>
+          </DialogActions>
+        </Dialog>
     </Container>
   );
 }

@@ -3,12 +3,12 @@ import styles from './styles.less';
 import { history } from 'umi';
 import { Link } from 'umi';
 
-import { Card, Typography, Grid, CardContent, Button, TextField, InputLabel, Container } from '@material-ui/core';
+import { Card, Typography, Dialog ,DialogActions ,  Grid, DialogTitle, CardContent, Button, TextField, InputLabel, Container } from '@material-ui/core';
 
 import BASE_URL from '../../endpoint';
 
 const Signin: FunctionComponent = () => {
-
+  const [success, setSuccess] = React.useState(false);
   const [selectedUser, setSelectedUser] = React.useState("");
   const [selectedPassword, setSelectedPassword] = React.useState("");
 
@@ -20,44 +20,47 @@ const Signin: FunctionComponent = () => {
   };
 
   const handleSubmit = async () => {
-    const response = await fetch(`${BASE_URL}/user/signin`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify ({
-        username: selectedUser,
-        password: selectedPassword
+    try {
+
+      const response = await fetch(`${BASE_URL}/user/signin`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify ({
+          username: selectedUser,
+          password: selectedPassword
+        })
       })
-    })
-
-    const res = await response.json();
-
-    if (await response != undefined) {
-      console.log(res)
-      if (res.token != undefined) {
-        localStorage.setItem("token", res.token.token)
-        localStorage.setItem("userId", res.token.userId)
-        
-        history.push({
-          pathname: '/home',
-          state: {
-            token: res.token
-          }
+  
+      const res = await response.json();
+  
+      if (await response != undefined) {
+ 
+        if (res.token != undefined) {
+          localStorage.setItem("token", res.token.token)
+          localStorage.setItem("userId", res.token.userId)
           
-        });
+          history.push({
+            pathname: '/home',
+            state: {
+              token: res.token
+            }
+            
+          });
+        }
+        else {
+          setSuccess(true)
+        }
       }
-      else {
-        console.log("erro ao logar")
-        console.log(res)
-
-      }
-      // FAZ ALGO
-
+    } catch {
+      setSuccess(true)
     }
   }
-
+  const handleClose = () => {
+    setSuccess(false);
+  };
   return (
     <Container className={styles.container} maxWidth="sm">
       <Grid
@@ -122,6 +125,20 @@ const Signin: FunctionComponent = () => {
           </Card>
         </Grid>
       </Grid>
+
+
+      <Dialog
+          open={success}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">Erro ao realizar login</DialogTitle>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Ok
+            </Button>
+          </DialogActions>
+        </Dialog>
     </Container>
   );
 }

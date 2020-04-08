@@ -44,7 +44,6 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
   }
 
   const getUser = async () => {
-    console.log(token)
     const response = await fetch(`${BASE_URL}/user/${token.userId}`, {
       method: 'GET'
     })

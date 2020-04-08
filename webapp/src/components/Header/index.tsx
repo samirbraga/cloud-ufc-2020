@@ -18,7 +18,6 @@ const Header: FunctionComponent<HeaderProps> = ({ title }) => {
     const [token, setToken] = React.useState({id: 0, token: localStorage.getItem("token"), userId: localStorage.getItem("userId")});
 
     const getUser = async () => {
-        console.log(token)
         const response = await fetch(`${BASE_URL}/user/${token.userId}`, {
           method: 'GET'
         })

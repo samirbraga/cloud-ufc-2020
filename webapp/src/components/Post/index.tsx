@@ -53,7 +53,6 @@ const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, p
         setLiked(!liked)
     
         if (await response != undefined) {
-          console.log("deu certo")
   
         }
 

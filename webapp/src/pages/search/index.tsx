@@ -80,7 +80,6 @@ export default function OutlinedCard() {
     if (await response != undefined) {
       setBuscar(false)
       setPost(res)
-      console.log(res)
     }
 
   }
