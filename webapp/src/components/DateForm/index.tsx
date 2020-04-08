@@ -27,59 +27,73 @@ const useStyles = makeStyles((theme) => ({
 
   }));
 
-const Post: FunctionComponent = () => {
-  const trigger = useScrollTrigger({ target: window });
-  const classes = useStyles();
-  const [selectedDate, setSelectedDate] = React.useState(new Date());
+interface DateFormProps {
+    start: (date: MaterialUiPickersDate) => void,
+    end: (date: MaterialUiPickersDate) => void,
+    selectedStart: Date,
+    selectedEnd: Date
+};
 
-  const handleDateChange: (date: MaterialUiPickersDate) => void = (date: MaterialUiPickersDate) => {
-    if ( date )
-      setSelectedDate(new Date(date.toISOString()));
-  };
+const DateForm: FunctionComponent<DateFormProps> = ({start, end, selectedEnd, selectedStart}) => {
+const trigger = useScrollTrigger({ target: window });
+const classes = useStyles();
+  
+
     return (
         <Card className={classes.root}>
 
         <CardContent>
-          <Typography variant="h6" color="textSecondary" component="h2">Busca por data</Typography>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <Grid container justify="space-around">
-              <KeyboardDatePicker
-                disableToolbar
-                variant="inline"
-                format="MM/dd/yyyy"
-                margin="normal"
-                id="date-picker-inlin1e"
-                label="Data inicial"
-                value={selectedDate}
-                onChange={handleDateChange}
-                KeyboardButtonProps={{
-                  'aria-label': 'change date',
-                }}
-              />
-              <KeyboardDatePicker
-                disableToolbar
-                variant="inline"
-                format="MM/dd/yyyy"
-                margin="normal"
-                id="date-picker-inline"
-                label="Data final"
-                value={selectedDate}
-                onChange={handleDateChange}
-                KeyboardButtonProps={{
-                  'aria-label': 'change date',
-                }}
-              />
+          <Grid
+            container
+            direction="column"
+            justify="center"
+            alignItems="center"
+            spacing={2}
+          >
+            <Grid item>
+              <Typography variant="h6" color="textSecondary" component="h2">Busca por data</Typography> 
             </Grid>
-          </MuiPickersUtilsProvider>
+            <Grid item>
+              <Grid container justify="space-around">
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                      disableToolbar
+                      variant="inline"
+                      format="dd/MM/yyyy"
+                      margin="normal"
+                      id="date-picker-inlin1e"
+                      label="Data inicial"
+                      value={selectedStart}
+                      onChange={start}
+                      KeyboardButtonProps={{
+                        'aria-label': 'change date',
+                      }}
+
+                    />
+                    <KeyboardDatePicker
+                      disableToolbar
+                      variant="inline"
+                      format="dd/MM/yyyy"
+                      margin="normal"
+                      id="date-picker-inline"
+                      label="Data final"
+                      value={selectedEnd}
+                      onChange={end}
+                      KeyboardButtonProps={{
+                        'aria-label': 'change date',
+                      }}
+                    />
+                  </MuiPickersUtilsProvider>
+
+              </Grid>
+              </Grid>
+              <Grid item>
+                <Button variant="contained" color="primary" size="small" onClick={() => console.log("foi")}>Buscar</Button>
+              </Grid>
+            </Grid>
         </CardContent>
-        <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon />
-          </IconButton>
-          <Typography  variant="subtitle1" color="textSecondary" component="p">100</Typography>
-        </CardActions>
       </Card>
     );
 }
 
-export default Post;
+export default DateForm;

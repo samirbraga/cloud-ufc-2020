@@ -88,7 +88,6 @@ const Create: FunctionComponent<CreateProps> = ({ token }) => {
         myHeaders.append("Authorization", `Bearer ${tok.token}`);
 
         const form = new FormData()
-
         form.append('s3Address', selectedPhoto)
         form.append('publicationDate', new Date().toISOString())
         form.append('description', selectedDescription)

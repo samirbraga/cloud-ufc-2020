@@ -4,7 +4,7 @@ import Post from '@/components/Post';
 import DateForm from '@/components/DateForm';
 import styles from './styles.less';
 import BASE_URL from '../../endpoint';
-
+import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { Grid, Avatar, IconButton, Container } from '@material-ui/core';
 
 const Home: FunctionComponent<HomeProps> =  (props) => {
@@ -47,6 +47,17 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
     }
   }, [])
 
+  const [selectedStart, setSelectedStart] = React.useState(new Date());
+  const [selectedEnd, setSelectedEnd] = React.useState(new Date());
+
+  const handleDateStartChance: (date: MaterialUiPickersDate) => void = (date: MaterialUiPickersDate) => {
+    if ( date )
+    setSelectedStart(new Date(date.toISOString()));
+  };
+  const handleDateEndChance: (date: MaterialUiPickersDate) => void = (date: MaterialUiPickersDate) => {
+    if ( date )
+      setSelectedEnd(new Date(date.toISOString()));
+  };
   return (
       <Grid>
         <Header title='Instagram'/>
@@ -58,11 +69,11 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
             alignItems="center"
             spacing={2}
           >
-            <Grid item><DateForm/></Grid>
+            <Grid item><DateForm start={handleDateStartChance} end={handleDateEndChance} selectedEnd={selectedEnd} selectedStart={selectedStart}/></Grid>
 
             {posts.map((post: PostType, i: number) => (
               <Grid item key={i}>
-                <Post photo={post.s3Address} description={post.description} name={user.name} profile={user.photo}/>
+                <Post photo={post.s3Address} description={post.description} name={user.name} id={post.id} user_id={token.userId} profile={user.photo}/>
               </Grid>
             ))}
           </Grid>
