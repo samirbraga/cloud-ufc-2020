@@ -29,8 +29,8 @@ class PostController {
         
         const { body } = req
 
-        if (req.file && req.file.location) {
-            body.s3Address = req.file.location
+        if (req.file && req.file.path) {
+            body.s3Address = req.file.path
         } else {
             delete body.s3Address
         }
@@ -56,8 +56,8 @@ class PostController {
         
         const { body } = req
 
-        if (req.file && req.file.location) {
-            body.s3Address = req.file.location
+        if (req.file && req.file.path) {
+            body.s3Address = req.file.path
         } else {
             delete body.s3Address
         }

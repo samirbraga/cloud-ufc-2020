@@ -70,8 +70,8 @@ class UserController {
     public async create(req: Request & GCSMulterFile, res: Response) {
         const { body } = req
 
-        if (req.file && req.file.location) {
-            body.profilePhoto = req.file.location
+        if (req.file && req.file.path) {
+            body.profilePhoto = req.file.path
         } else {
             delete body.profilePhoto
         }
@@ -128,8 +128,8 @@ class UserController {
         const { body } = req
 
 
-        if (req.file && req.file.location) {
-            body.profilePhoto = req.file.location
+        if (req.file && req.file.path) {
+            body.profilePhoto = req.file.path
         } else {
             delete body.profilePhoto
         }

@@ -9,7 +9,6 @@ const sequelize = new sequelize_1.Sequelize(config_1.default.DB_NAME, config_1.d
     dialect: 'postgres',
     quoteIdentifiers: false,
     host: `/cloudsql/${process.env.GC_DB_ID}`,
-    port: parseInt(config_1.default.DB_PORT),
     dialectOptions: {
         socketPath: `/cloudsql/${process.env.GC_DB_ID}`
     },

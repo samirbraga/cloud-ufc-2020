@@ -61,8 +61,8 @@ let UserController = class UserController {
     }
     async create(req, res) {
         const { body } = req;
-        if (req.file && req.file.location) {
-            body.profilePhoto = req.file.location;
+        if (req.file && req.file.path) {
+            body.profilePhoto = req.file.path;
         }
         else {
             delete body.profilePhoto;
@@ -106,8 +106,8 @@ let UserController = class UserController {
     async update(req, res) {
         const { userId } = req.params;
         const { body } = req;
-        if (req.file && req.file.location) {
-            body.profilePhoto = req.file.location;
+        if (req.file && req.file.path) {
+            body.profilePhoto = req.file.path;
         }
         else {
             delete body.profilePhoto;

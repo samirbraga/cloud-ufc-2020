@@ -24,8 +24,8 @@ let PostController = class PostController {
     async add(req, res) {
         const { userId } = req.payload;
         const { body } = req;
-        if (req.file && req.file.location) {
-            body.s3Address = req.file.location;
+        if (req.file && req.file.path) {
+            body.s3Address = req.file.path;
         }
         else {
             delete body.s3Address;
@@ -41,8 +41,8 @@ let PostController = class PostController {
     async update(req, res) {
         const { postId } = req.params;
         const { body } = req;
-        if (req.file && req.file.location) {
-            body.s3Address = req.file.location;
+        if (req.file && req.file.path) {
+            body.s3Address = req.file.path;
         }
         else {
             delete body.s3Address;
