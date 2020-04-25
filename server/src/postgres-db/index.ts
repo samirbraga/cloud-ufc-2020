@@ -4,9 +4,9 @@ import config from '../config'
 const sequelize = new Sequelize(config.DB_NAME, config.DB_USER, config.DB_PASS, {
     dialect: 'postgres',
     quoteIdentifiers: false,
-    host: `/cloudsql/{instance}`,
+    host: `/cloudsql/${process.env.GC_DB_ID}`,
     dialectOptions: {
-        socketPath: `/cloudsql/{instance}`
+        socketPath: `/cloudsql/${process.env.GC_DB_ID}`
     },
     define: {
         timestamps: false,
