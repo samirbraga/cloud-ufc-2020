@@ -3,4 +3,4 @@ import AppServer from "./Server";
 
 const appServer = new AppServer()
 
-appServer.start(3000)
+appServer.start(process.env.PORT || 3000)
