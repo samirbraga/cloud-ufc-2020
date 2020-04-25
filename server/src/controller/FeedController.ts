@@ -17,7 +17,7 @@ class FeedController {
         } = req.query
 
         if (startDate && endDate) {
-            posts = await this.postService.getBetweenDates(startDate, endDate)
+            posts = await this.postService.getBetweenDates(startDate as string, endDate as string)
         } else {
             posts = await this.postService.getAll()
         }
