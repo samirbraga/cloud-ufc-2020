@@ -1,3 +1,6 @@
 # [START gae_quickstart_yaml]
 runtime: nodejs10
 # [END gae_quickstart_yaml]
+beta_settings:
+    cloud_sql_instances: {instance}
+  
