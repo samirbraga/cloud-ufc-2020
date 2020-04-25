@@ -14,7 +14,7 @@ const db = mongoose.createConnection(url, {
     useUnifiedTopology: true,
     ssl: true,
     sslValidate: false,
-    sslCA: [readFileSync('rds-combined-ca-bundle.pem')]
+    // sslCA: [readFileSync('rds-combined-ca-bundle.pem')]
 })
 
 export default db;
