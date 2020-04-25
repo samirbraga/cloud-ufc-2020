@@ -1,79 +1,66 @@
 import IRepository from './Repository';
-import LikeCount, { ILikeCount } from '../model/LikeCount';
+import { datastore } from '../model/LikeCount';
 
-class LikeCountRepo extends IRepository<ILikeCount, LikeCountEntity> {
+class LikeCountRepo extends IRepository<LikeCountEntity> {
+    kind = 'like_count'
+
     getById(id: string) {
-        return LikeCount.findById(id).exec()
+        return new Promise<LikeCountEntity>(() => {})
     }
 
     getAll(filter: Partial<LikeCountEntity>) {
-        return LikeCount.find({
-            ...filter
-        }).exec()
+        return new Promise<LikeCountEntity[]>(() => {})
     }
 
-    insert(data: LikeCountEntity) {
-        const newLikeCount = new LikeCount(data)
-        return newLikeCount.save()
+    async insert(data: LikeCountEntity) {
+        const taskKey = datastore.key([this.kind, data.postId])
+        const task = {
+          key: taskKey,
+          data: {
+            count: data.likesCount,
+          }
+        }
+        await datastore.save(task)
+        return data
     }
 
-    increment(postId: number) {
-        return LikeCount.findOneAndUpdate({
-            postId
-        }, {
-            $inc: {
-                'likesCount': 1
+    async increment(postId: number) {
+        const key = datastore.key([this.kind, postId])
+        const [entity] = await datastore.get(key)
+        
+        return await datastore.update({
+            key,
+            data: {
+                ...entity,
+                count: entity.count + 1
             }
-        }).exec()
+        })
     }
 
 
-    dencrement(postId: number) {
-        return LikeCount.findOneAndUpdate({
-            postId
-        }, {
-            $dec: {
-                'likesCount': 1
+    async dencrement(postId: number) {
+        const key = datastore.key([this.kind, postId])
+        const [entity] = await datastore.get(key)
+        
+        return await datastore.update({
+            key,
+            data: {
+                ...entity,
+                count: entity.count - 1
             }
-        }).exec()
+        })
     }
 
     updateById(id: number, updates: Partial<LikeCountEntity>) {
-        return new Promise((resolve, reject) => {
-            LikeCount.findByIdAndUpdate(id, updates).exec()
-            .then(likeCount => {
-                if (likeCount) {
-                    resolve([1, [likeCount]])
-                } else {
-                    resolve([0, []])
-                }
-            })
-            .catch(reject)
-        }) as Promise<[number, ILikeCount[]]>
+        return new Promise<[number, LikeCountEntity[]]>(() => {})
     }
 
     destroyById(id: number) {
-        return new Promise((resolve, reject) => {
-            LikeCount.findByIdAndRemove(id).exec()
-            .then(likeCount => {
-                if (likeCount) {
-                    resolve(1)
-                } else {
-                    resolve(0)
-                }
-            })
-            .catch(reject)
-        }) as Promise<number>
+        return new Promise<number>(() => {})
     }
 
     destroy(updates: Partial<LikeCountEntity>) {
-        return new Promise((resolve, reject) => {
-            LikeCount.remove(updates).exec()
-            .then(likeCounts => {
-                resolve(likeCounts.deletedCount)
-            })
-            .catch(reject)
-        }) as Promise<number>
+        return new Promise<number>(() => {})
     }
 }
 
