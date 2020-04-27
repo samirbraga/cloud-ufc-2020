@@ -6,7 +6,7 @@ import { Controller, Middleware, Get, Post, Put, Delete, ClassWrapper } from '@o
 import PostService from "../service/PostService"
 import authMiddleware from "./middlewares/authMiddleware"
 import postAuthorityMiddleware from "./middlewares/postAuthorityMiddleware"
-import { upload, S3MulterFile } from './multerS3'
+import { upload, GCSMulterFile } from './multerGCS'
 
 type PostRequestParams = {
     postId: string,
@@ -24,13 +24,13 @@ class PostController {
         authMiddleware,
         upload.single('s3Address')
     ])
-    public async add(req: ISecureRequest & S3MulterFile, res: Response) {
+    public async add(req: ISecureRequest & GCSMulterFile, res: Response) {
         const { userId } = req.payload
         
         const { body } = req
 
-        if (req.file && req.file.location) {
-            body.s3Address = req.file.location
+        if (req.file && req.file.path) {
+            body.s3Address = req.file.path
         } else {
             delete body.s3Address
         }
@@ -51,13 +51,13 @@ class PostController {
         postAuthorityMiddleware,
         upload.single('s3Address')
     ])
-    public async update(req: Request<PostRequestParams> & S3MulterFile, res: Response) {
+    public async update(req: Request<PostRequestParams> & GCSMulterFile, res: Response) {
         const { postId } = req.params
         
         const { body } = req
 
-        if (req.file && req.file.location) {
-            body.s3Address = req.file.location
+        if (req.file && req.file.path) {
+            body.s3Address = req.file.path
         } else {
             delete body.s3Address
         }

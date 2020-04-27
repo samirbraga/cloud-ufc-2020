@@ -16,7 +16,7 @@ const core_1 = require("@overnightjs/core");
 const PostService_1 = __importDefault(require("../service/PostService"));
 const authMiddleware_1 = __importDefault(require("./middlewares/authMiddleware"));
 const postAuthorityMiddleware_1 = __importDefault(require("./middlewares/postAuthorityMiddleware"));
-const multerS3_1 = require("./multerS3");
+const multerGCS_1 = require("./multerGCS");
 let PostController = class PostController {
     constructor() {
         this.postService = PostService_1.default.getInstance();
@@ -24,8 +24,8 @@ let PostController = class PostController {
     async add(req, res) {
         const { userId } = req.payload;
         const { body } = req;
-        if (req.file && req.file.location) {
-            body.s3Address = req.file.location;
+        if (req.file && req.file.path) {
+            body.s3Address = req.file.path;
         }
         else {
             delete body.s3Address;
@@ -41,8 +41,8 @@ let PostController = class PostController {
     async update(req, res) {
         const { postId } = req.params;
         const { body } = req;
-        if (req.file && req.file.location) {
-            body.s3Address = req.file.location;
+        if (req.file && req.file.path) {
+            body.s3Address = req.file.path;
         }
         else {
             delete body.s3Address;
@@ -114,7 +114,7 @@ __decorate([
     core_1.Middleware([
         jwt_1.JwtManager.middleware,
         authMiddleware_1.default,
-        multerS3_1.upload.single('s3Address')
+        multerGCS_1.upload.single('s3Address')
     ])
 ], PostController.prototype, "add", null);
 __decorate([
@@ -123,7 +123,7 @@ __decorate([
         jwt_1.JwtManager.middleware,
         authMiddleware_1.default,
         postAuthorityMiddleware_1.default,
-        multerS3_1.upload.single('s3Address')
+        multerGCS_1.upload.single('s3Address')
     ])
 ], PostController.prototype, "update", null);
 __decorate([

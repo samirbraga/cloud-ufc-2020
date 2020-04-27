@@ -4,72 +4,53 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Repository_1 = __importDefault(require("./Repository"));
-const LikeCount_1 = __importDefault(require("../model/LikeCount"));
+const LikeCount_1 = require("../model/LikeCount");
 class LikeCountRepo extends Repository_1.default {
+    constructor() {
+        super(...arguments);
+        this.kind = 'like_count';
+    }
     getById(id) {
-        return LikeCount_1.default.findById(id).exec();
+        return new Promise(() => { });
     }
     getAll(filter) {
-        return LikeCount_1.default.find(Object.assign({}, filter)).exec();
+        return new Promise(() => { });
     }
-    insert(data) {
-        const newLikeCount = new LikeCount_1.default(data);
-        return newLikeCount.save();
-    }
-    increment(postId) {
-        return LikeCount_1.default.findOneAndUpdate({
-            postId
-        }, {
-            $inc: {
-                'likesCount': 1
+    async insert(data) {
+        const taskKey = LikeCount_1.datastore.key([this.kind, data.postId]);
+        const task = {
+            key: taskKey,
+            data: {
+                count: data.likesCount,
             }
-        }).exec();
+        };
+        await LikeCount_1.datastore.save(task);
+        return data;
     }
-    dencrement(postId) {
-        return LikeCount_1.default.findOneAndUpdate({
-            postId
-        }, {
-            $dec: {
-                'likesCount': 1
-            }
-        }).exec();
+    async increment(postId) {
+        const key = LikeCount_1.datastore.key([this.kind, postId]);
+        const [entity] = await LikeCount_1.datastore.get(key);
+        return await LikeCount_1.datastore.update({
+            key,
+            data: Object.assign(Object.assign({}, entity), { count: entity.count + 1 })
+        });
+    }
+    async dencrement(postId) {
+        const key = LikeCount_1.datastore.key([this.kind, postId]);
+        const [entity] = await LikeCount_1.datastore.get(key);
+        return await LikeCount_1.datastore.update({
+            key,
+            data: Object.assign(Object.assign({}, entity), { count: entity.count - 1 })
+        });
     }
     updateById(id, updates) {
-        return new Promise((resolve, reject) => {
-            LikeCount_1.default.findByIdAndUpdate(id, updates).exec()
-                .then(likeCount => {
-                if (likeCount) {
-                    resolve([1, [likeCount]]);
-                }
-                else {
-                    resolve([0, []]);
-                }
-            })
-                .catch(reject);
-        });
+        return new Promise(() => { });
     }
     destroyById(id) {
-        return new Promise((resolve, reject) => {
-            LikeCount_1.default.findByIdAndRemove(id).exec()
-                .then(likeCount => {
-                if (likeCount) {
-                    resolve(1);
-                }
-                else {
-                    resolve(0);
-                }
-            })
-                .catch(reject);
-        });
+        return new Promise(() => { });
     }
     destroy(updates) {
-        return new Promise((resolve, reject) => {
-            LikeCount_1.default.remove(updates).exec()
-                .then(likeCounts => {
-                resolve(likeCounts.deletedCount);
-            })
-                .catch(reject);
-        });
+        return new Promise(() => { });
     }
 }
 exports.default = LikeCountRepo;

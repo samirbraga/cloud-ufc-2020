@@ -6,5 +6,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config();
 const Server_1 = __importDefault(require("./Server"));
 const appServer = new Server_1.default();
-appServer.start(3000);
+appServer.start(parseInt(process.env.PORT) || 3000);
 //# sourceMappingURL=index.js.map

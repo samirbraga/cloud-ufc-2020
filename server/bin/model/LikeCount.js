@@ -1,14 +1,7 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importDefault(require("mongoose"));
-const mongodb_1 = __importDefault(require("../mongodb"));
-const likeCountSchema = new mongoose_1.default.Schema({
-    postId: Number,
-    likesCount: Number
-});
-const LikeCount = mongodb_1.default.model('likecount', likeCountSchema, 'likecount');
-exports.default = LikeCount;
+__export(require("../datastore"));
 //# sourceMappingURL=LikeCount.js.map

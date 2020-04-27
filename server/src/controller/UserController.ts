@@ -5,7 +5,7 @@ import { JwtManager, ISecureRequest } from '@overnightjs/jwt'
 import UserService from '../service/UserService'
 import { Delete, Controller, Post, Put, Get, Middleware, ClassWrapper } from '@overnightjs/core'
 import authMiddleware from './middlewares/authMiddleware'
-import { upload, S3MulterFile } from './multerS3'
+import { upload, GCSMulterFile } from './multerGCS'
 
 
 @Controller('api/user')
@@ -13,11 +13,10 @@ import { upload, S3MulterFile } from './multerS3'
 class UserController {
     private userService = UserService.getInstance()
 
-
     @Get('search')
     public async searchByUsername(req: Request, res: Response) {
         const { q } = req.query
-        const users = await this.userService.searchByUsername(q)
+        const users = await this.userService.searchByUsername(q as string)
 
         if (Array.isArray(users)) {
             res.status(OK).json(users)
@@ -68,11 +67,11 @@ class UserController {
     
     @Post('signup')
     @Middleware(upload.single('profilePhoto'))
-    public async create(req: Request & S3MulterFile, res: Response) {
+    public async create(req: Request & GCSMulterFile, res: Response) {
         const { body } = req
 
-        if (req.file && req.file.location) {
-            body.profilePhoto = req.file.location
+        if (req.file && req.file.path) {
+            body.profilePhoto = req.file.path
         } else {
             delete body.profilePhoto
         }
@@ -124,13 +123,13 @@ class UserController {
         authMiddleware,
         upload.single('profilePhoto')
     ])
-    public async update(req: ISecureRequest & S3MulterFile, res: Response) {
+    public async update(req: ISecureRequest & GCSMulterFile, res: Response) {
         const { userId } = req.params
         const { body } = req
 
 
-        if (req.file && req.file.location) {
-            body.profilePhoto = req.file.location
+        if (req.file && req.file.path) {
+            body.profilePhoto = req.file.path
         } else {
             delete body.profilePhoto
         }

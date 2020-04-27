@@ -15,7 +15,7 @@ const jwt_1 = require("@overnightjs/jwt");
 const UserService_1 = __importDefault(require("../service/UserService"));
 const core_1 = require("@overnightjs/core");
 const authMiddleware_1 = __importDefault(require("./middlewares/authMiddleware"));
-const multerS3_1 = require("./multerS3");
+const multerGCS_1 = require("./multerGCS");
 let UserController = class UserController {
     constructor() {
         this.userService = UserService_1.default.getInstance();
@@ -61,8 +61,8 @@ let UserController = class UserController {
     }
     async create(req, res) {
         const { body } = req;
-        if (req.file && req.file.location) {
-            body.profilePhoto = req.file.location;
+        if (req.file && req.file.path) {
+            body.profilePhoto = req.file.path;
         }
         else {
             delete body.profilePhoto;
@@ -106,8 +106,8 @@ let UserController = class UserController {
     async update(req, res) {
         const { userId } = req.params;
         const { body } = req;
-        if (req.file && req.file.location) {
-            body.profilePhoto = req.file.location;
+        if (req.file && req.file.path) {
+            body.profilePhoto = req.file.path;
         }
         else {
             delete body.profilePhoto;
@@ -149,7 +149,7 @@ __decorate([
 ], UserController.prototype, "logout", null);
 __decorate([
     core_1.Post('signup'),
-    core_1.Middleware(multerS3_1.upload.single('profilePhoto'))
+    core_1.Middleware(multerGCS_1.upload.single('profilePhoto'))
 ], UserController.prototype, "create", null);
 __decorate([
     core_1.Post('signin')
@@ -162,7 +162,7 @@ __decorate([
     core_1.Middleware([
         jwt_1.JwtManager.middleware,
         authMiddleware_1.default,
-        multerS3_1.upload.single('profilePhoto')
+        multerGCS_1.upload.single('profilePhoto')
     ])
 ], UserController.prototype, "update", null);
 __decorate([
