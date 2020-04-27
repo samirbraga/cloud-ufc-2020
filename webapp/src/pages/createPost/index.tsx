@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   buttonProgress: {
     color: green[500],
     position: 'absolute',
-    top: '72%',
+    top: '67%',
     left: '50%',
     marginTop: -12,
     marginLeft: -12,
@@ -209,9 +209,7 @@ const Create: FunctionComponent<CreateProps> = ({ token }) => {
                   alignItems="center"
                   spacing={2}
                 >
-                  <Grid item>
-                    <TextField id="standard-basic" label="Descrição" type="description" rows={4} multiline onChange={handleDescriptionChange}/>
-                  </Grid>
+                  <Grid item></Grid>
                 
                   <Grid item>
                     <Button variant="contained" color="primary" size="small" disabled={loading} onClick={handleSubmit}>Postar</Button>

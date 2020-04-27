@@ -25,20 +25,21 @@ interface PostProps {
     photo: string,
     description: string,
     name: string,
+    username: string,
     profile: string,
     id: number,
     userId: number,
     likes: any[]
 };
 
-const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, profile, id, userId } ) => {
+const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, profile, username, id, userId } ) => {
   const trigger = useScrollTrigger({ target: window });
   const [getInfo, setGetInfo] = React.useState(true)
 
   const classes = useStyles();
   const [token, setToken] = React.useState({id: 0, token: localStorage.getItem("token"), userId: localStorage.getItem("userId")});
   const [liked, setLiked] = React.useState(likes?.some(like => like.id === parseInt(token.userId)))
-  const [user, setUser] = React.useState({name: "", photo: ""})
+  const [user, setUser] = React.useState({name: "", username: "", photo: ""})
   
   const getUser = async () => {
     const response = await fetch(`${BASE_URL}/user/${userId}`, {
@@ -48,7 +49,7 @@ const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, p
     const res = await response.json();
 
     if (await response != undefined) {
-      setUser({name: `${res.firstName} ${res.lastName}`, photo: res.profilePhoto})
+      setUser({name: `${res.firstName} ${res.lastName}`, username: res.username, photo: res.profilePhoto})
     }
   }
 
@@ -90,7 +91,7 @@ const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, p
           avatar={
             <Avatar aria-label="profile ophoto" src={user.photo} />
           }
-          title={user.name}
+          title={`${user.name} (${user.username})`}
         />
         <CardMedia
           className={classes.media}

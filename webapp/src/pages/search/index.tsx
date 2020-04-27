@@ -7,6 +7,8 @@ import styles from './styles.less';
 import { NavLink } from 'umi';
 import BASE_URL from '../../endpoint';
 
+import { green } from '@material-ui/core/colors';
+
 import { makeStyles } from '@material-ui/core/styles';
 import { 
   Card, 
@@ -24,7 +26,8 @@ import {
   TextField, 
   InputLabel, 
   Input, 
-  Container 
+  Container,
+  CircularProgress
 } from '@material-ui/core'
 
 
@@ -43,9 +46,21 @@ const useStyles = makeStyles((theme) => ({
     width: theme.spacing(8),
     height: theme.spacing(8),
   },
+  buttonProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: '23.5%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
+  },
 }));
 
 export default function OutlinedCard() {
+  const classes = useStyles();
+
+  const [loading, setLoading] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
 
   const [buscaInfo, setBuscaInfo] = React.useState({photo: "", name: ""});
   const [users, setUsers] = React.useState(Array<UserType>());
@@ -59,23 +74,32 @@ export default function OutlinedCard() {
   };
 
   const handleSubmit = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/user/search?q=${user}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
+    if (!loading) {
+      try {
+        setSuccess(false);
+        setLoading(true);
+        const response = await fetch(`${BASE_URL}/user/search?q=${user}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          }
+        })
+    
+        const res = await response.json();
+    
+        if (await response != undefined) {
+          setSuccess(true);
+          setLoading(false);
+
+          setBuscar(true)
+          setUsers(res)
         }
-      })
-  
-      const res = await response.json();
-  
-      if (await response != undefined) {
-        setBuscar(true)
-        setUsers(res)
+      } finally {
+        setSuccess(true);
+        setLoading(false);
+        setClick(true)
       }
-    } finally {
-      setClick(true)
     }
 
   }
@@ -115,7 +139,6 @@ export default function OutlinedCard() {
               <Typography variant="h4" component="h4" align="center">
                 Buscar Usuário
               </Typography>
-              <form noValidate autoComplete="off">
                 <Grid
                   container
                   direction="column"
@@ -124,13 +147,15 @@ export default function OutlinedCard() {
                   spacing={2}
                 >
                   <Grid item>
-                    <TextField id="standard-basic" label="Nome de usuário" onChange={handleUserChange}/>
+                    <TextField id="standard-basic" label="Nome de usuário" disabled={loading} onChange={handleUserChange} onKeyPress={(target) => {if (target.charCode==13) handleSubmit()}}/>
                   </Grid>
                   <Grid item>
-                    <Button variant="contained" color="primary" size="small" onClick={handleSubmit}>Buscar</Button>
+                    <div> 
+                      <Button variant="contained" color="primary" size="small" disabled={loading} onClick={handleSubmit} onKeyPress={(target) => {if (target.charCode==13) handleSubmit()}}>Buscar</Button>
+                      {loading && <CircularProgress size={24} className={classes.buttonProgress} />} 
+                    </div>
                   </Grid>
                 </Grid>
-              </form>
             </CardContent>            
           </Card>
         </Grid>
