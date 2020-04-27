@@ -38,7 +38,8 @@ const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, p
 
   const classes = useStyles();
   const [token, setToken] = React.useState({id: 0, token: localStorage.getItem("token"), userId: localStorage.getItem("userId")});
-  const [liked, setLiked] = React.useState(likes?.some(like => like.id === parseInt(token.userId)))
+  const alreadyLiked = React.useMemo(() => likes?.some(like => like.id === parseInt(token.userId)), [])
+  const [currentLiked, setCurrentLiked] = React.useState(false)
   const [user, setUser] = React.useState({name: "", username: "", photo: ""})
   
   const getUser = async () => {
@@ -69,11 +70,11 @@ const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, p
         const response = await fetch(`${BASE_URL}/posts/${id}/likes`, {
           method: 'POST',
           body: JSON.stringify ({
-            like: !liked,
+            like: !(alreadyLiked !== currentLiked),
           }),
           headers: myHeaders
         })
-        setLiked(!liked)
+        setCurrentLiked(!currentLiked)
     
         if (await response != undefined) {
   
@@ -105,9 +106,11 @@ const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, p
         </CardContent>
         <CardActions disableSpacing>
           <IconButton aria-label="add to favorites" onClick={handleSubmit}>
-            <FavoriteIcon color={liked ? 'secondary' : 'inherit'}/>
+            <FavoriteIcon color={(alreadyLiked !== currentLiked) ? 'secondary' : 'inherit'}/>
           </IconButton>
-          <Typography  variant="subtitle1" color="textSecondary" component="p">{likes?.length + (liked ? 1 : 0)}</Typography>
+          <Typography  variant="subtitle1" color="textSecondary" component="p">
+            {likes?.length + ((alreadyLiked && currentLiked) ? -1 : ((!alreadyLiked && currentLiked) ? 1 : 0))}
+          </Typography>
         </CardActions>
       </Card>
     );
