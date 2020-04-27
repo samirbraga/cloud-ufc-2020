@@ -124,7 +124,8 @@ const Create: FunctionComponent<CreateProps> = ({ token }) => {
         if (await response != undefined && user.status !== "error") {
           setSuccess(true);
           setLoading(false);
-          console.log(user)
+
+          setPhoto("#")
 
           setTitleDialog("Sucesso")
           setContentDialog("Postagem criada com sucesso")
@@ -138,6 +139,7 @@ const Create: FunctionComponent<CreateProps> = ({ token }) => {
         }
 
       } catch {
+
         setSuccess(true);
         setLoading(false);
 
