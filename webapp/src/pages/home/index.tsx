@@ -127,7 +127,6 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
                   name={user.name} 
                   userId={post.userId}  
                   profile={user.photo}
-                  refreshPost={getPostsFiltered}
                 />
               </Grid>
             ))}

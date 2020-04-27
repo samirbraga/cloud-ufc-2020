@@ -180,7 +180,6 @@ export default function OutlinedCard() {
                 name={buscaInfo.name} 
                 profile={buscaInfo.photo} 
                 userId={post.userId}
-                refreshPost={handleSubmit}
               /> 
             </Grid>
             )})

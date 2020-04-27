@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 interface PostProps {
-    refreshPost: () => {},
     photo: string,
     description: string,
     name: string,
@@ -33,13 +32,14 @@ interface PostProps {
     likes: any[]
 };
 
-const Post: FunctionComponent<PostProps> = ({ refreshPost, likes, photo, description, name, profile, username, id, userId } ) => {
+const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, profile, username, id, userId } ) => {
   const trigger = useScrollTrigger({ target: window });
   const [getInfo, setGetInfo] = React.useState(true)
 
   const classes = useStyles();
   const [token, setToken] = React.useState({id: 0, token: localStorage.getItem("token"), userId: localStorage.getItem("userId")});
-  const [liked, setLiked] = React.useState(likes?.some(like => like.id === parseInt(token.userId)))
+  const alreadyLiked = React.useMemo(() => likes?.some(like => like.id === parseInt(token.userId)), [])
+  const [currentLiked, setCurrentLiked] = React.useState(false)
   const [user, setUser] = React.useState({name: "", username: "", photo: ""})
   
   const getUser = async () => {
@@ -70,12 +70,11 @@ const Post: FunctionComponent<PostProps> = ({ refreshPost, likes, photo, descrip
         const response = await fetch(`${BASE_URL}/posts/${id}/likes`, {
           method: 'POST',
           body: JSON.stringify ({
-            like: !liked,
+            like: !(alreadyLiked !== currentLiked),
           }),
           headers: myHeaders
         })
-
-        refreshPost()
+        setCurrentLiked(!currentLiked)
     
         if (await response != undefined) {
   
@@ -107,9 +106,11 @@ const Post: FunctionComponent<PostProps> = ({ refreshPost, likes, photo, descrip
         </CardContent>
         <CardActions disableSpacing>
           <IconButton aria-label="add to favorites" onClick={handleSubmit}>
-            <FavoriteIcon color={liked ? 'secondary' : 'inherit'}/>
+            <FavoriteIcon color={(alreadyLiked !== currentLiked) ? 'secondary' : 'inherit'}/>
           </IconButton>
-          <Typography  variant="subtitle1" color="textSecondary" component="p">{likes?.length}</Typography>
+          <Typography  variant="subtitle1" color="textSecondary" component="p">
+            {likes?.length + ((alreadyLiked && currentLiked) ? -1 : ((!alreadyLiked && currentLiked) ? 1 : 0))}
+          </Typography>
         </CardActions>
       </Card>
     );
