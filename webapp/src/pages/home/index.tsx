@@ -13,8 +13,12 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
   const [getInfo, setGetInfo] = React.useState(true)
   const [user, setUser] = React.useState({name: "", photo: ""})
   const [token, setToken] = React.useState({id: 0, token: localStorage.getItem("token"), userId: localStorage.getItem("userId")});
-  const [selectedStart, setSelectedStart] = React.useState();
-  const [selectedEnd, setSelectedEnd] = React.useState();
+  const [selectedStart, setSelectedStart] = React.useState(new Date().toISOString());
+  const [selectedEnd, setSelectedEnd] = React.useState(new Date().toISOString());
+ 
+  const [loading, setLoading] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
+  const [click, setClick] = React.useState(false);
 
   const getPosts = async () => {
     const response = await fetch(`${BASE_URL}/feed`, {
@@ -31,14 +35,27 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
   
   const getPostsFiltered = async () => {
     if (selectedStart && selectedStart) {
-      const response = await fetch(`${BASE_URL}/feed?startDate=${selectedStart}&endDate=${selectedEnd}`, {
-        method: 'GET'
-      })
-  
-      const res = await response.json();
-  
-      if (await response != undefined) {
-        setPosts(res)
+      try {
+        setLoading(true)
+        const response = await fetch(`${BASE_URL}/feed?startDate=${selectedStart}&endDate=${selectedEnd}`, {
+          method: 'GET'
+        })
+    
+        const res = await response.json();
+    
+        if (await response != undefined) {
+          setPosts(res)
+          setSuccess(true);
+          setLoading(false);
+        } else {
+          setSuccess(false);
+          setLoading(false);
+          setClick(true)
+        }
+      } catch {
+        setSuccess(false);
+        setLoading(false);
+        setClick(true)
       }
     }
   }
@@ -65,12 +82,15 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
 
 
   const handleDateStartChance: (date: MaterialUiPickersDate) => void = (date: MaterialUiPickersDate) => {
-    if ( date )
-    setSelectedStart(date.toISOString());
+    if ( date ) setSelectedStart(date.toISOString());
   };
+  
   const handleDateEndChance: (date: MaterialUiPickersDate) => void = (date: MaterialUiPickersDate) => {
-    if ( date )
-      setSelectedEnd(date.toISOString());
+    if ( date ) setSelectedEnd(date.toISOString());
+  };
+
+  const handleClose = () => {
+    setClick(false);
   };
   return (
       <Grid>
@@ -83,7 +103,18 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
             alignItems="center"
             spacing={2}
           >
-            <Grid item><DateForm onSubmit={() => getPostsFiltered()} start={handleDateStartChance} end={handleDateEndChance} selectedEnd={selectedEnd} selectedStart={selectedStart}/></Grid>
+            <Grid item>
+              <DateForm 
+                onSubmit={() => getPostsFiltered()} 
+                start={handleDateStartChance} 
+                end={handleDateEndChance} 
+                selectedEnd={selectedEnd} 
+                selectedStart={selectedStart}
+                handleClose={handleClose}
+                click={click}
+                loading={loading}
+              />
+              </Grid>
 
             {posts.map((post: PostType, i: number) => (
               <Grid item key={i}>
@@ -92,6 +123,7 @@ const Home: FunctionComponent<HomeProps> =  (props) => {
                   likes={post.users} 
                   description={post.description} 
                   photo={post.s3Address} 
+                  username={user.username} 
                   name={user.name} 
                   userId={post.userId}  
                   profile={user.photo}

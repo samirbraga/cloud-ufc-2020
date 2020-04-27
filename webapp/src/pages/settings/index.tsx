@@ -19,6 +19,11 @@ import {
   InputLabel, 
   Input, 
   Container,
+  Dialog,
+  DialogActions, 
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   CircularProgress
 } from '@material-ui/core'
 import { green } from '@material-ui/core/colors';
@@ -49,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   buttonProgress: {
     color: green[500],
     position: 'absolute',
-    top: '60%',
+    top: '69%',
     left: '50%',
     marginTop: -12,
     marginLeft: -12,
@@ -63,6 +68,8 @@ const Settings: FunctionComponent = () => {
 
   const [loading, setLoading] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
+  const [message, setMessage] = React.useState({title: "", content: ""});
+  const [click, setClick] = React.useState(false);
 
   const [selectedFirstName, setSelectedFirstName] = React.useState("");
   const [selectedLastName, setSelectedLastName] = React.useState("");
@@ -138,18 +145,28 @@ const Settings: FunctionComponent = () => {
         if (await response != undefined) {
           setSuccess(true);
           setLoading(false);
+          setClick(true)
+          setMessage({title: "Sucesso", content: "Usuário modificado com sucesso"})
+
   
         } else {
           setSuccess(true);
-          setLoading(false);
-
+          setLoading(false)
+          setClick(true);
+          setMessage({title: "Erro", content: "Erro ao modificar usuario"})
         }
 
-      } finally {
+      } catch {
         setSuccess(true);
         setLoading(false);
+        setClick(true)
+        setMessage({title: "Erro", content: "Erro ao modificar usuario"})
+
       }
     }
+  };
+  const handleClose = () => {
+    setClick(false);
   };
 
   const getUser = async () => {
@@ -217,7 +234,7 @@ const Settings: FunctionComponent = () => {
                   spacing={2}
                 >
                   <Grid item>
-                    <input accept="image/*" className={styles.input} id="icon-button-file" type="file" onChange={handlePhotoChange}/>
+                    <input accept="image/*" disabled={loading} className={styles.input} id="icon-button-file" type="file" onChange={handlePhotoChange}/>
                     <label htmlFor="icon-button-file">
                       <IconButton color="primary" aria-label="upload picture" component="span">
                         <PhotoCamera />
@@ -225,16 +242,16 @@ const Settings: FunctionComponent = () => {
                     </label>
                   </Grid>
                   <Grid item>
-                    <TextField id="standard-basic1" label="E-mail"onChange={handleEmailChange} type="email" value={selectedEmail}/>
+                    <TextField id="standard-basic1" label="E-mail"onChange={handleEmailChange} disabled={loading} type="email" value={selectedEmail}/>
                   </Grid>
                   <Grid item>
-                    <TextField id="standard-basic2" label="Nome" onChange={handleFirstNameChange} type="firstname" value={selectedFirstName}/>
+                    <TextField id="standard-basic2" label="Nome" onChange={handleFirstNameChange} disabled={loading}  type="firstname" value={selectedFirstName}/>
                   </Grid>
                   <Grid item>
-                    <TextField fullWidth id="standard-basic3" label="Sobrenome" onChange={handleLastNameChange} type="lastname" value={selectedLastName}/>
+                    <TextField fullWidth id="standard-basic3" label="Sobrenome" disabled={loading} onChange={handleLastNameChange} type="lastname" value={selectedLastName}/>
                   </Grid>
                   <Grid item>
-                    <TextField id="standard-basic4 " label="Nome de usuário" onChange={handleUserChange} type="username" value={selectedUser}/>
+                    <TextField id="standard-basic4 " label="Nome de usuário" disabled={loading} onChange={handleUserChange} type="username" value={selectedUser}/>
                   </Grid>
                   <Grid item>
                     <TextField
@@ -244,6 +261,7 @@ const Settings: FunctionComponent = () => {
                       autoComplete="current-password"
                       onChange={handlePasswordChange}
                       value={selectedPassword}
+                      disabled={loading}
                     />
                   </Grid>
                   <Grid item>
@@ -260,6 +278,7 @@ const Settings: FunctionComponent = () => {
                         KeyboardButtonProps={{
                           'aria-label': 'change date',
                         }}
+                        disabled={loading}
                       />
                     </MuiPickersUtilsProvider>
                   </Grid>
@@ -291,7 +310,27 @@ const Settings: FunctionComponent = () => {
           </Card>
         </Grid>
       </Grid>
+
+
+      <Dialog
+          open={click}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{message.title}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {message.content}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Fechar
+            </Button>
+          </DialogActions>
+        </Dialog>
     </Container>
+
   );
 }
 

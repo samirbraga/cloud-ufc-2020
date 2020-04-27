@@ -1,5 +1,14 @@
 import React, { FunctionComponent } from 'react';
-import {Collapse, AppBar, Toolbar, Grid, IconButton, CardMedia, CardActions, CardContent, CardHeader, Avatar, Card, Typography, Button, useScrollTrigger, Slide } from '@material-ui/core';
+import {
+  Collapse, 
+  Dialog,
+  DialogActions, 
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  AppBar, 
+  Toolbar, 
+  Grid, IconButton, CardMedia, CardActions, CircularProgress, CardContent, CardHeader, Avatar, Card, Typography, Button, useScrollTrigger, Slide } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/menu';
 import styles from './styles.css';
 import ShareIcon from '@material-ui/icons/Share';
@@ -7,6 +16,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import { makeStyles } from '@material-ui/core/styles';
+
+import { green } from '@material-ui/core/colors';
 
 import DateFnsUtils from '@date-io/date-fns';
 
@@ -24,20 +35,30 @@ const useStyles = makeStyles((theme) => ({
       height: 0,
       paddingTop: '56.25%', // 16:9
     },
-
+    buttonProgress: {
+      color: green[500],
+      position: 'absolute',
+      top: '34%',
+      left: '50%',
+      marginTop: -12,
+      marginLeft: -12,
+    },
   }));
 
 interface DateFormProps {
     start: (date: MaterialUiPickersDate) => void,
     end: (date: MaterialUiPickersDate) => void,
-    selectedStart: Date,
-    selectedEnd: Date,
-    onSubmit: () => void
+    selectedStart: String,
+    selectedEnd: String,
+    onSubmit: () => void,
+    handleClose: () => void,
+    loading: boolean,
+    click: boolean
 };
 
-const DateForm: FunctionComponent<DateFormProps> = ({onSubmit, start, end, selectedEnd, selectedStart}) => {
+const DateForm: FunctionComponent<DateFormProps> = ({onSubmit, start, loading, click, end, selectedEnd, handleClose, selectedStart}) => {
   const classes = useStyles();
-    
+
     return (
         <Card className={classes.root}>
 
@@ -67,7 +88,7 @@ const DateForm: FunctionComponent<DateFormProps> = ({onSubmit, start, end, selec
                       KeyboardButtonProps={{
                         'aria-label': 'change date',
                       }}
-
+                      disabled={loading}
                     />
                     <KeyboardDatePicker
                       disableToolbar
@@ -81,16 +102,37 @@ const DateForm: FunctionComponent<DateFormProps> = ({onSubmit, start, end, selec
                       KeyboardButtonProps={{
                         'aria-label': 'change date',
                       }}
+                      disabled={loading}
                     />
                   </MuiPickersUtilsProvider>
 
               </Grid>
               </Grid>
               <Grid item>
-                <Button variant="contained" color="primary" size="small" onClick={() => onSubmit()}>Buscar</Button>
+                <Button variant="contained" disabled={loading} color="primary" size="small" onClick={() => onSubmit()} onKeyPress={(target) => {if (target.charCode==13) onSubmit()}}>Buscar</Button>
+                {loading && <CircularProgress size={24} className={classes.buttonProgress} />}  
               </Grid>
             </Grid>
+            
         </CardContent>
+
+        <Dialog
+          open={click}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">Erro</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Erro ao buscar postagens por data
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Fechar
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Card>
     );
 }

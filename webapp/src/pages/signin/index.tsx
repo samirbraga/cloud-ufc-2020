@@ -97,7 +97,7 @@ const Signin: FunctionComponent = () => {
                     />
                   </Grid>
                   <Grid item>
-                    <Button variant="contained" color="primary" size="small" onClick={handleSubmit}>Entrar</Button>
+                    <Button variant="contained" color="primary" size="small" onClick={handleSubmit} onKeyPress={(target) => {if (target.charCode==13) handleSubmit()}}>Entrar</Button>
                   </Grid>
                 </Grid>
               </form>
@@ -117,7 +117,7 @@ const Signin: FunctionComponent = () => {
                   spacing={2}
                 >
                   <InputLabel>Não tem uma conta?</InputLabel>
-                  <Button size="small" color="primary" ><Link to={{pathname: "/signup"}} >Cadastre-se</Link></Button>
+                  <Button size="small" color="primary" onKeyPress={(target) => {if (target.charCode==13) history.push({pathname: '/signup' })}}><Link to={{pathname: "/signup"}} >Cadastre-se</Link></Button>
                 </Grid>
               </form>
             </CardContent>

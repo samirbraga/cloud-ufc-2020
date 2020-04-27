@@ -231,6 +231,7 @@ const Signup: FunctionComponent<SignupProps> = ({ fromNotifications }) => {
                         size="small" 
                         onClick={handleSubmit}
                         disabled={loading}
+                        onKeyPress={(target) => {if (target.charCode==13) handleSubmit()}}
                       >Cadastre-se</Button>
                       {loading && <CircularProgress size={24} className={classes.buttonProgress} />}  
                     </div>
@@ -253,7 +254,7 @@ const Signup: FunctionComponent<SignupProps> = ({ fromNotifications }) => {
                   spacing={2}
                 >
                   <InputLabel>Tem uma conta?</InputLabel>
-                  <Button size="small" color="primary"><NavLink to="/">Conecte-se</NavLink></Button>
+                  <Button size="small" color="primary" onKeyPress={(target) => {if (target.charCode==13) history.push({pathname: '/' })}}><NavLink to="/">Conecte-se</NavLink></Button>
                 </Grid>
               </form>
             </CardContent>
