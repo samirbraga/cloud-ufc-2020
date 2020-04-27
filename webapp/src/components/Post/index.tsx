@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 interface PostProps {
+    refreshPost: () => {},
     photo: string,
     description: string,
     name: string,
@@ -32,7 +33,7 @@ interface PostProps {
     likes: any[]
 };
 
-const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, profile, username, id, userId } ) => {
+const Post: FunctionComponent<PostProps> = ({ refreshPost, likes, photo, description, name, profile, username, id, userId } ) => {
   const trigger = useScrollTrigger({ target: window });
   const [getInfo, setGetInfo] = React.useState(true)
 
@@ -73,7 +74,8 @@ const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, p
           }),
           headers: myHeaders
         })
-        setLiked(!liked)
+
+        refreshPost()
     
         if (await response != undefined) {
   
@@ -107,7 +109,7 @@ const Post: FunctionComponent<PostProps> = ({ likes, photo, description, name, p
           <IconButton aria-label="add to favorites" onClick={handleSubmit}>
             <FavoriteIcon color={liked ? 'secondary' : 'inherit'}/>
           </IconButton>
-          <Typography  variant="subtitle1" color="textSecondary" component="p">{likes?.length + (liked ? 1 : 0)}</Typography>
+          <Typography  variant="subtitle1" color="textSecondary" component="p">{likes?.length}</Typography>
         </CardActions>
       </Card>
     );

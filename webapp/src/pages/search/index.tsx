@@ -172,7 +172,7 @@ export default function OutlinedCard() {
           (!buscar) && posts.map((post: PostType, i: number) => {
             return (
             <Grid item key={i} > 
-              <Post 
+              <Post
                 id={post.id} 
                 likes={post.users} 
                 description={post.description} 
@@ -180,7 +180,8 @@ export default function OutlinedCard() {
                 name={buscaInfo.name} 
                 profile={buscaInfo.photo} 
                 userId={post.userId}
-                /> 
+                refreshPost={handleSubmit}
+              /> 
             </Grid>
             )})
         }
