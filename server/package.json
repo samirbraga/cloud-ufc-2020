@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpileOnly ./src/index.ts",
+    "build": "tsc",
     "test": "jest --runInBand"
   },
   "repository": {
@@ -23,8 +24,6 @@
     "@overnightjs/core": "^1.6.15",
     "@overnightjs/jwt": "^1.1.15",
     "@overnightjs/logger": "^1.1.10",
-    "@types/aws-sdk": "^2.7.0",
-    "@types/http-status-codes": "^1.2.0",
     "@types/mongoose": "^5.7.8",
     "@types/multer": "^1.4.2",
     "@types/multer-s3": "^2.7.7",

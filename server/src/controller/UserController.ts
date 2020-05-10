@@ -17,7 +17,7 @@ class UserController {
     @Get('search')
     public async searchByUsername(req: Request, res: Response) {
         const { q } = req.query
-        const users = await this.userService.searchByUsername(q)
+        const users = await this.userService.searchByUsername(q as string)
 
         if (Array.isArray(users)) {
             res.status(OK).json(users)
