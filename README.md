@@ -439,3 +439,31 @@ Desta forma, estes foram os resultados obtidos:
 #### item d) Mapeie a distribuição temporal das revisões. (1,0 ponto)
 
 Neste item a classe map irá manter o mesmo fluxo dos itens anteriores, a diferença é que aqui o código do mapper irá ler o valor contido na chave "createdAt" que contém o dia, mês e ano da publicação da revisão, após isso irá mandar para o stdout com um número 1 após o separador "\t" para contabilizar a revisão naquela data, para então ser utilizado pelo reduce para juntar a contabilização das reviões para cada dia. Ao final é feita a plotagem de um gráfico de reviões por mês utilizando a biblioteca matplotlib sendo o X a lista de meses e o Y o número de revisões no mês.
+
+Esta é a distribuição temporal por _dia_:
+| Dia | Quantidade de revisões |
+| --- | ---------------------- |
+|July 26, 2016|     26
+|June 8, 2016|      26
+|September 14, 2015|26
+|September 2, 2015| 26
+|April 25, 2016|    27
+|August 7, 2016|    27
+|February 8, 2016|  27
+|June 30, 2016|     27
+|May 27, 2016|      27
+|October 18, 2016|  29
+|November 1, 2016|  31
+|October 17, 2016|  32
+|September 15, 2015|32
+|August 10, 2016|   33
+August 14, 2015|    34
+April 10, 2017|     35
+September 8, 2016|  35
+August 13, 2015|    37
+September 28, 2015| 46
+July 25, 2016|      48
+
+Este gráfico representação a distribuição temporal por _mês_:
+
+![Gráfico temporal por mês](grafico_temporal_mes.jpg)
