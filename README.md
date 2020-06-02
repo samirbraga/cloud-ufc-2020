@@ -333,14 +333,108 @@ Esta questão foi, originalmente, toda feita em Java. Porém, um dos integrantes
 
 Neste item a classe map irá ler o arquivo json linha por linha e transformando-a em um objeto dicionário em python para que seja possível acessar as chaves e valores necessárias. Neste caso a chave necessária é a "text", então o mapper irá ler as palavras do valor contido na chave "text" de cada linha e irá enviá-lo para o stdout contendo o número 1 logo após um separador definido como "\t", significando a contagem daquela palavra contida dentro do texto.
 
-#### item b) Encontre as expressões mais usadas. 
+Desta forma, estes foram os resultados obtidos:
+| Palavra | Quantidade |
+| ------  | ---------- |
+|back|    177
+|, |      184
+|thing|   186
+|&|       195
+|time|    198
+|few|     201
+|there.|  202
+|lit|     217
+|want|    222
+|through| 224
+|5|       229
+|night.|  239
+|able|    243
+|.|       255
+|2nd|     256
+|time.|   259
+|way|     266
+|experience.|     268
+|2|       307
+|up.|     348
+|is|      415
+|than|    463
+|top.|    506
+|are|     643
+|were|    661
+|to|      680
+|-|       715
 
-Considere uma expressão um conjunto de palavras na sequencia. O tamanho da sequencia pode ser determinado por você. (1,0 ponto)
+#### item b) Encontre as expressões mais usadas.  Considere uma expressão um conjunto de palavras na sequencia. O tamanho da sequencia pode ser determinado por você. (1,0 ponto)
+
 Neste item a classe map utilizou de uma parte do código utilizado no item a), porém aqui ela irá receber um valor determinado pelo usuário (expression_size) que definirá o tamanho da expressão (quantidade de palavras), após isso o mapper irá ler as palavras do valor contido na chave "text" de cada linha e irá adicioná-las à uma variável expressão até atingir o tamanho pré-definido para uma expressão e irá enviá-la para o stdout contendo o número 1 logo após um separador definido como "\t". Quando o mapper ler palavras para formar uma expressão e o texto acabar sem formar o tamanho definido para uma expressão ele não irá contabilizar aquela expressão, baseado na ideia de que expressões são escritas linearmente e uma expressão posterior nao utiliza palavras da expressão anterior.
+
+Desta forma, estes foram os resultados obtidos: 
+| Expressão | Quantidade
+| --------- | ----------|
+|want to go|      31
+|of the city.|    32
+|views of the|    33
+|you are in|      34
+|of the most|     35
+|you want to|     35
+|lift to the|     38
+|to the very|     38
+|the very top|    40
+|to the 2nd|      40
+|to the first|    41
+|view of the|     42
+|the day and|     46
+|to go to|        49
+|to take the|     49
+|the way to|      54
+|way to the|      54
+|elevator to the| 55
+|go up the|       58
+|to get to|       60
+|to see the|      60
+|the top and|     62
+|all the way|     76
+|get to the|      78
+|top of the|      102
+|to the second|   106
+|to the top.|     113
+|up to the|       122
+|to go up|        130
+|to the top|      158
 
 #### item c) Encontre os principais tópicos relacionados às revisões. (1,0 ponto)
 
 Como foi dito pelo professor esse item irá pegar as palavras do título da revisão, então a alteração que foi feita do item a) para este item c) é que ao invés de acessar a chave "text", o mapper irá acessar a chave "title" e contabilizar as palavras e enviá-las para o stdout da mesma maneira que o item a).
+
+Desta forma, estes foram os resultados obtidos:
+| Tópico | Quantidade |
+| ------ | ---------  |
+|thing|   17
+|expect|  18
+|I|       18
+|your|    18
+|!!|      19
+|.|       19
+|ahead|   19
+|on|      19
+|or|      19
+|Paris!|  19
+|at|      20
+|night.|  20
+|off|     20
+|prepared|        20
+|about|   21
+|Paris,|  21
+|while|   21
+|it.|     24
+|&|       29
+|Paris|   30
+|Paris.|  32
+|by|      33
+|in|      33
+|and|     41
+|!|       46
+|-|       122
 
 #### item d) Mapeie a distribuição temporal das revisões. (1,0 ponto)
 
