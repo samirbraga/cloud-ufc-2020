@@ -335,7 +335,8 @@ O código desta questão está na pasta `questão 3` com a seguinte estrutura:
 
 1. O item 'a' foi executado nos arquivos `mapper.py` e `reducer.py`
 2. O item 'b' foi executado nos arquivos `mapper_2.py` e `reducer_2.py`
-3. O item 'c' foi executado nos arquivos `mapper_3.py`, `reducer_3.py` e `plotter_3.py`
+3. O item 'c' foi executado nos arquivos `mapper_3.py`, `reducer_3.py` 
+4. O item 'd' foi executado no arquivo `plotter_3.py`
 
 #### item a) Encontre as palavras mais utilizadas nas avaliações. (1,0 ponto)
 
