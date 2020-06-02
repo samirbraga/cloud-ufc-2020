@@ -15,7 +15,7 @@ Como nós fizemos classes de _mappers_ e _reducers_ feitas em python, utilizamos
 
 ### Questão 2 
 
-O código desta questão está no arquivo `primeira.ipynb`
+O código desta questão está na pasta `questao2`, no arquivo `primeira.ipynb`
 
 #### item a) Quais foram as hashtags mais usadas pela manhã, tarde e noite? (1,0 ponto)
 
@@ -330,6 +330,12 @@ Estes foram os resultados obtidos:
 Esta questão foi, originalmente, toda feita em Java. Porém, um dos integrantes do grupo responsável por essa questão teve o computador corrompido por um atualização do Sistema Operacional e todo o código teve de ser refeito para python, usando Jupyter, sem um ambiente configurado com o Hadoop. Neste caso, os códigos para essa questão foram testados no mesmo ambiente da questão 3. 
 
 ### Questão 3
+
+O código desta questão está na pasta `questão 3` com a seguinte estrutura:
+
+1. O item 'a' foi executado nos arquivos `mapper.py` e `reducer.py`
+2. O item 'b' foi executado nos arquivos `mapper_2.py` e `reducer_2.py`
+3. O item 'c' foi executado nos arquivos `mapper_3.py`, `reducer_3.py` e `plotter_3.py`
 
 #### item a) Encontre as palavras mais utilizadas nas avaliações. (1,0 ponto)
 
