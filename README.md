@@ -472,6 +472,6 @@ August 13, 2015|    37
 September 28, 2015| 46
 July 25, 2016|      48
 
-Este gráfico representação a distribuição temporal por _mês_:
+Este gráfico representa a distribuição temporal por _mês_:
 
 ![Gráfico temporal por mês](grafico_temporal_mes.jpg)
