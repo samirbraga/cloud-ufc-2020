@@ -15,6 +15,8 @@ Como nós fizemos classes de _mappers_ e _reducers_ feitas em python, utilizamos
 
 ### Questão 2 
 
+O código desta questão está no arquivo `primeira.ipynb`
+
 #### item a) Quais foram as hashtags mais usadas pela manhã, tarde e noite? (1,0 ponto)
 
 Primeiro foi feito um mapping com a chave sendo o turno e o valor sendo a hashtag na mensagem. O reducer agrupa as hashtags de cada turno e conta a quantidade.
